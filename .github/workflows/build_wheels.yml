@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3.1.0
 
       - name: Build and test wheels
         uses: pypa/cibuildwheel@v2.1.1
@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3.1.0
         name: Install Python
         with:
           python-version: '3.8'
