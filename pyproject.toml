@@ -9,8 +9,7 @@ requires = [
     "Cython>=0.22",
     "toml",
     # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-    "oldest-supported-numpy",
-    "numpy<1.23"
+    "oldest-supported-numpy"
 ]
 
 # uncomment to enable pep517 after versioneer problem is fixed.
