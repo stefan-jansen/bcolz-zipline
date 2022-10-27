@@ -1,7 +1,7 @@
 import sys
 
-if sys.version[0:3] >= '3.3':
+if sys.version_info.minor >= 3:
     from unittest.mock import Mock
 else:
-    from mock import Mock
+    raise ImportError('Python 3.3 or greater is required')
 Mock = Mock
