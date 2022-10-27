@@ -70,29 +70,24 @@ Optional:
 There are wheels for Linux and Mac OS X that you can install with
 
 ```python
-pip
-install
-bcolz - zipline
+pip install bcolz-zipline
 ```
 
 Then also install NumPy with
 
 ```python
-pip
-install
-numpy
+pip install "numpy<1.23"
 ```
 
 and test your installation with
 
 ```python
-python - c
-'import bcolz;bcolz.test()'
+python -c 'import bcolz;bcolz.test()'
 ```
 
 ## Building
 
-There are different ways to compile bcolz, depending if you want to link with an already installed Blosc library or not.
+There are different ways to compile bcolz, depending on whether you want to link with an already installed Blosc library or not.
 
 ### Compiling with an installed Blosc library (recommended)
 
