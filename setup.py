@@ -167,6 +167,6 @@ setup(
         extra_compile_args=CFLAGS
     )],
     # todo: numpy release breaks ctable.carray.create()
-    install_requires=['numpy<1.23'],
+    # install_requires=['numpy<1.23'],
     cmdclass=LazyCommandClass(),
 )
