@@ -11,8 +11,8 @@ import toml  # noqa: F401
 from sys import version_info as v
 
 # Check this Python version is supported
-if any([(3,) < v < (3, 6)]):
-    raise Exception("Unsupported Python version %d.%d. Requires Python >= 3.6." % v[:2])
+if any([(3,) < v < (3, 7)]):
+    raise Exception("Unsupported Python version %d.%d. Requires Python > 3.6." % v[:2])
 
 import os
 from pathlib import Path
@@ -166,7 +166,6 @@ setup(
         extra_link_args=LFLAGS,
         extra_compile_args=CFLAGS
     )],
-    # todo: numpy release breaks ctable.carray.create()
-    # install_requires=['numpy<1.23'],
+    install_requires=['numpy>=1.5,<1.23'],
     cmdclass=LazyCommandClass(),
 )
