@@ -166,6 +166,6 @@ setup(
         extra_link_args=LFLAGS,
         extra_compile_args=CFLAGS
     )],
-    install_requires=['numpy>=1.5,<1.23'],
+    # install_requires=['numpy>=1.5,<1.23'],
     cmdclass=LazyCommandClass(),
 )
