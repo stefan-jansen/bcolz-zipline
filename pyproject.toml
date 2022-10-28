@@ -1,5 +1,10 @@
 [project]
+name = "bcolz-zipline"
+version = "1.2.5"
 requires-python = ">=3.7"
+dependencies = [
+    "numpy >=1.16, <1.23",
+]
 
 [build-system]
 requires = [
@@ -9,13 +14,13 @@ requires = [
     "Cython>=0.22",
     "toml",
     # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-    "oldest-supported-numpy",
-    "numpy<1.23"
+    "oldest-supported-numpy"
 ]
 
 # uncomment to enable pep517 after versioneer problem is fixed.
 # https://github.com/python-versioneer/python-versioneer/issues/193
 # build-backend = "setuptools.build_meta"
+
 
 [tool.setuptools_scm]
 write_to = "bcolz/version.py"
