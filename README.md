@@ -54,7 +54,7 @@ So, the ultimate goal for bcolz is not only reducing the memory needs of large a
 ## Requisites
 
 - Python >= 3.7
-- NumPy >= 1.16.5
+- NumPy >= 1.16.5, <1.23 (1.23 is not supported yet)
 - Cython >= 0.22 (just for compiling the beast)
 - C-Blosc >= 1.8.0 (optional, as the internal Blosc will be used by default)
 
@@ -74,10 +74,6 @@ pip install bcolz-zipline
 ```
 
 Then also install NumPy with
-
-```python
-pip install "numpy<1.23"
-```
 
 and test your installation with
 
@@ -129,7 +125,7 @@ After compiling, you can quickly check that the package is sane by running:
 
     $ PYTHONPATH=.   (or "set PYTHONPATH=." on Windows)
     $ export PYTHONPATH    (not needed on Windows)
-    $ python -c"import bcolz; bcolz.test()"  # add `heavy=True` if desired
+    $ python -c "import bcolz; bcolz.test()"  # add `heavy=True` if desired
 
 ## Installing
 

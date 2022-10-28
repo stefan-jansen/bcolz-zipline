@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python: [ 37, 38, 39, 310, 311 ]
+        python: [ 37, 38, 39, 310 ]
         manylinux_image: [ manylinux2010, manylinux2014 ]
 
     steps:
@@ -55,7 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ macos-latest ]
-        python: [ 37, 38, 39, '310', '311' ]
+        python: [ 37, 38, 39, '310' ]
 
     steps:
       - name: Checkout bcolz
