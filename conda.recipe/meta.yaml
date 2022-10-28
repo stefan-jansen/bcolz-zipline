@@ -17,12 +17,12 @@ requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cython                                 # [build_platform != target_platform]
-    - numpy                                  # [build_platform != target_platform]    -
+    - numpy <1.23                           # [build_platform != target_platform]    -
     - {{ compiler('c') }}
   host:
     - python
     - cython
-    - numpy
+    - numpy <1.23
     - toml
     - pip
     - setuptools_scm
@@ -34,7 +34,7 @@ test:
   commands:
     - python -c "import bcolz; bcolz.test()"
   requires:
-    - numpy
+    - numpy <1.23
 
 about:
   home: https://github.com/stefan-jansen/bcolz-zipline
