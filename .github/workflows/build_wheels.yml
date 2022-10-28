@@ -102,14 +102,14 @@ jobs:
           path: dist
 
       - name: publish to testpypi
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.event.inputs.target }} == 'TESTPYPI'
         with:
           user: __token__
           password: ${{ secrets.PYPITEST_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
       - name: publish to pypi
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.event.inputs.target }} == 'PYPI' || (github.event_name == 'release' && github.event.action == 'published')
         with:
           user: __token__
