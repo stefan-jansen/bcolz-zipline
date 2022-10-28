@@ -1,5 +1,5 @@
 {% set name = "bcolz-zipline" %}
-{% set version = "1.2.4" %}
+{% set version = "1.2.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: b8c212df89901110fb2b48efe96853a4
+  md5: 2afd6c5b2fdf107cc13925458b32844f
 
 build:
   number: 0
