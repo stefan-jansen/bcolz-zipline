@@ -13,7 +13,7 @@ on:
 
 jobs:
   build_wheels:
-    name: Wheels for py${{ matrix.python }} on ${{ matrix.os }} using ${{ matrix.manylinux_image }}
+    name: Wheels for py${{ matrix.python }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -21,7 +21,8 @@ jobs:
       matrix:
         os: [ ubuntu-latest , windows-latest, macos-latest ]
         python: [ 37, 38, 39, '310', '311' ]
-        arch: [ auto ]
+        arch: [ auto64 ]
+        manylinux_image: [ manylinux2010, manylinux2014 ]
 
     steps:
       - name: Checkout bcolz
@@ -34,23 +35,22 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Wheels for macOS / Linux
+      - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
-          CIBW_SKIP: '*-manylinux*_i686'
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_BUILD: "cp${{ matrix.python }}-*"
           CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
-          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
 
       - name: Install MSVC amd64
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
 
-      - name: Build wheels windows
+      - name: Wheels Windows
         if: runner.os == 'Windows'
         uses: pypa/cibuildwheel@v2.11.2
         env:
