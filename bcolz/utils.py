@@ -14,8 +14,9 @@ from __future__ import absolute_import
 import os
 import os.path
 import subprocess
-import math
 from time import time
+
+import math
 import numpy as np
 
 
@@ -57,14 +58,14 @@ def csformula(expectedsizeinMB):
     # 4 MB for datasets >= 10 GB
     # The next figure is based on experiments with 'movielens-bench' repo
     basesize = 4 * 1024
-    return basesize * int(2**(math.log10(expectedsizeinMB)+6))
+    return basesize * int(2 ** (math.log10(expectedsizeinMB) + 6))
 
 
 def limit_es(expectedsizeinMB):
     """Protection against creating too small or too large chunks."""
-    if expectedsizeinMB < 1e-4:     # < .1 KB
+    if expectedsizeinMB < 1e-4:  # < .1 KB
         expectedsizeinMB = 1e-4
-    elif expectedsizeinMB > 1e4:    # > 10 GB
+    elif expectedsizeinMB > 1e4:  # > 10 GB
         expectedsizeinMB = 1e4
     return expectedsizeinMB
 
@@ -86,7 +87,7 @@ def calc_chunksize(expectedsizeinMB):
 
     expectedsizeinMB = limit_es(expectedsizeinMB)
     zone = int(math.log10(expectedsizeinMB))
-    expectedsizeinMB = 10**zone
+    expectedsizeinMB = 10 ** zone
     chunksize = csformula(expectedsizeinMB)
     return chunksize
 
@@ -109,8 +110,8 @@ def to_ndarray(array, dtype, arrlen=None, safe=True):
         array = np.array(array)
 
     # Arrays with a 0 stride are special
-    if type(array) == np.ndarray and len(array.strides) and array.strides[0] == 0 and dtype is not None:
-        if array.dtype != dtype.base:
+    if type(array) == np.ndarray and len(array.strides) and array.strides[0] == 0:
+        if dtype is not None and array.dtype != dtype.base:
             raise TypeError("dtypes do not match")
         return array
 
@@ -133,7 +134,7 @@ def to_ndarray(array, dtype, arrlen=None, safe=True):
     # Check if we need a broadcast
     if arrlen is not None and arrlen != len(array):
         array2 = np.empty(shape=(arrlen,), dtype=dtype)
-        array2[:] = array   # broadcast
+        array2[:] = array  # broadcast
         array = array2
 
     return array
@@ -141,16 +142,16 @@ def to_ndarray(array, dtype, arrlen=None, safe=True):
 
 def human_readable_size(size):
     """Return a string for better assessing large number of bytes."""
-    if size < 2**10:
+    if size < 2 ** 10:
         return "%s" % size
-    elif size < 2**20:
-        return "%.2f KB" % (size / float(2**10))
-    elif size < 2**30:
-        return "%.2f MB" % (size / float(2**20))
-    elif size < 2**40:
-        return "%.2f GB" % (size / float(2**30))
+    elif size < 2 ** 20:
+        return "%.2f KB" % (size / float(2 ** 10))
+    elif size < 2 ** 30:
+        return "%.2f MB" % (size / float(2 ** 20))
+    elif size < 2 ** 40:
+        return "%.2f GB" % (size / float(2 ** 30))
     else:
-        return "%.2f TB" % (size / float(2**40))
+        return "%.2f TB" % (size / float(2 ** 40))
 
 
 def build_carray(array, rootdir):
@@ -193,18 +194,16 @@ def quantize(data, significant_digits):
     return np.around(scale * data) / scale
 
 
-
 # Main part
 # =========
 if __name__ == '__main__':
     print(human_readable_size(1023))
     print(human_readable_size(10234))
-    print(human_readable_size(10234*100))
-    print(human_readable_size(10234*10000))
-    print(human_readable_size(10234*1000000))
-    print(human_readable_size(10234*100000000))
-    print(human_readable_size(10234*1000000000))
-
+    print(human_readable_size(10234 * 100))
+    print(human_readable_size(10234 * 10000))
+    print(human_readable_size(10234 * 1000000))
+    print(human_readable_size(10234 * 100000000))
+    print(human_readable_size(10234 * 1000000000))
 
 # Local Variables:
 # mode: python
