@@ -12,67 +12,52 @@ on:
       - published
 
 jobs:
-  build_linux:
+  build_wheels:
     name: Wheels for py${{ matrix.python }} on ${{ matrix.os }} using ${{ matrix.manylinux_image }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest , windows-latest, macos-latest ]
         python: [ 37, 38, 39, '3.10', '3.11' ]
-        manylinux_image: [ manylinux2010, manylinux2014 ]
 
     steps:
       - name: Checkout bcolz
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          submodules: 'recursive'
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Build and test wheels
-        uses: pypa/cibuildwheel@v2.11.2
-        env:
-          CIBW_ARCHS_LINUX: x86_64
-          CIBW_BUILD: "cp${{ matrix.python }}-*"
-          CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true
-          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.manylinux_image }}
-          CIBW_MANYLINUX_I686_IMAGE: ${{ matrix.manylinux_image }}
-
-      - name: Store artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: wheelhouse/*.whl
-
-  build_macos:
-    name: Wheels for py${{ matrix.python }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest ]
-        python: [ 37, 38, 39, '310' ]
-
-    steps:
-      - name: Checkout bcolz
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Build wheels
+      - name: Wheels for macOS / Linux
+        if: runner.os != 'Windows'
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
+          CIBW_ARCHS_LINUX: x86_64
           CIBW_BUILD: "cp${{ matrix.python }}-*"
-          CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+          CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true
 
-      - uses: actions/upload-artifact@v3
+      - name: Install MSVC amd64
+        uses: ilammy/msvc-dev-cmd@v1
         with:
-          path: ./wheelhouse/*.whl
+          arch: amd64
+
+      - name: Build wheels windows
+        uses: pypa/cibuildwheel@v2.11.2
+        env:
+          CIBW_BUILD: 'cp38-win_amd64 cp39-win_amd64 cp310-win_amd64 cp311-win_amd64'
+          CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
