@@ -21,6 +21,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest , windows-latest, macos-latest ]
         python: [ 37, 38, 39, '3.10', '3.11' ]
+        arch: [ auto ]
 
     steps:
       - name: Checkout bcolz
