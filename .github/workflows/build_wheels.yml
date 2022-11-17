@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python: [ 37, 38, 39, 310 ]
+        python: [ 37, 38, 39, '3.10', '3.11' ]
         manylinux_image: [ manylinux2010, manylinux2014 ]
 
     steps:
@@ -78,7 +78,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v4
         name: Install Python
