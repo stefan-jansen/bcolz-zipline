@@ -84,7 +84,7 @@ from bcolz.toplevel import (
     iterblocks, cparams, walk)
 from bcolz.chunked_eval import eval
 from bcolz.defaults import defaults, defaults_ctx
-from bcolz.version import version as __version__
+from bcolz._version import version as __version__
 
 try:
     from bcolz.tests import test

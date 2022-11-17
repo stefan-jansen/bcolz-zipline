@@ -1,15 +1,48 @@
 [project]
 name = "bcolz-zipline"
-version = "1.2.5"
+version = "1.2.6"
 requires-python = ">=3.7"
 dependencies = [
-    "numpy >=1.16, <1.23",
+    "numpy >=1.16"
 ]
+
+description = "Columnar and compressed data containers."
+readme = "README.md"
+
+authors = [
+    { name = "Francesc Alted" },
+    { email = "francesc@blosc.org" }
+]
+maintainers = [
+    { name = "Francesc Alted" },
+    { email = "francesc@blosc.org" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+license = { file = "LICENSES/BCOLZ.txt" }
+
+[project.urls]
+repository = "https://github.com/stefan-jansen/bcolz-zipline"
 
 [build-system]
 requires = [
     "setuptools>=45",
-    "setuptools_scm>=6.2",
+    "setuptools_scm[toml]>=6.2",
     "wheel",
     "Cython>=0.22",
     "toml",
@@ -17,13 +50,25 @@ requires = [
     "oldest-supported-numpy"
 ]
 
-# uncomment to enable pep517 after versioneer problem is fixed.
-# https://github.com/python-versioneer/python-versioneer/issues/193
-# build-backend = "setuptools.build_meta"
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+optional = [
+    "numexpr>=2.5.2",
+    "dask>=0.9.0",
+    "pandas",
+    "tables"
+]
+
+test = [
+    "pytest>= 6.2.3",
+    "pytest-cov>=2.11.1",
+    "coveralls==3.0.1"
+]
 
 
 [tool.setuptools_scm]
-write_to = "bcolz/version.py"
+write_to = "bcolz/_version.py"
 version_scheme = 'guess-next-dev'
 local_scheme = 'dirty-tag'
 
@@ -38,3 +83,6 @@ build-verbosity = 3
 archs = ["x86_64", "arm64", "universal2"]
 test-skip = ["*universal2:arm64"]
 
+[tools.pytest]
+testpaths = "bcolz/tests"
+addopts = "-v"
