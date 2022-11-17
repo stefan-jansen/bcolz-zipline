@@ -82,6 +82,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
+    name: Upload to ${{github.event.inputs.target}}
     needs: [ build_wheels, build_sdist ]
     runs-on: ubuntu-latest
     steps:
@@ -90,14 +91,15 @@ jobs:
           name: artifact
           path: dist
 
-      - name: publish to testpypi
+      - name: Publish to PyPI - Test
         uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.event.inputs.target }} == 'TESTPYPI'
         with:
           user: __token__
           password: ${{ secrets.PYPITEST_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-      - name: publish to pypi
+
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: ${{ github.event.inputs.target }} == 'PYPI' || (github.event_name == 'release' && github.event.action == 'published')
         with:
