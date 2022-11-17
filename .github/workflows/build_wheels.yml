@@ -42,6 +42,7 @@ jobs:
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_BUILD: "cp${{ matrix.python }}-*"
+          CIBW_SKIP: "*-musllinux_*"
           CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
 
