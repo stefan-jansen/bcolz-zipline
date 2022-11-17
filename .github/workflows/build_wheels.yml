@@ -51,6 +51,7 @@ jobs:
           arch: amd64
 
       - name: Build wheels windows
+        if: runner.os == 'Windows'
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BUILD: 'cp38-win_amd64 cp39-win_amd64 cp310-win_amd64 cp311-win_amd64'
