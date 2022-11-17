@@ -39,7 +39,8 @@ jobs:
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
-          CIBW_ARCHS_LINUX: x86_64
+          CIBW_SKIP: '*-manylinux*_i686'
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_BUILD: "cp${{ matrix.python }}-*"
           CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true
