@@ -21,13 +21,13 @@ jobs:
         python: [ '3.7', '3.8', '3.9', '3.10' , '3.11']
 
     steps:
-      - name: set Xcode version
+      - name: Set Xcode version
         uses: maxim-lobanov/setup-xcode@v1
         if: ${{ matrix.os == 'macos-latest' }}
         with:
-          xcode-version: latest
+          xcode-version: latest-stable
 
-      - name: check macos.sdk
+      - name: Check macos.sdk
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           xcode-select --print-path

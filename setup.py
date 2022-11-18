@@ -167,4 +167,5 @@ setup(
         extra_compile_args=CFLAGS
     )],
     cmdclass=LazyCommandClass(),
+    language_level = "3"
 )
