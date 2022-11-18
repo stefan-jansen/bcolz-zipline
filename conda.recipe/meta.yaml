@@ -20,7 +20,7 @@ requirements:
 #    - numpy                                  # [build_platform != target_platform]    -
     - {{ compiler('c') }}
   host:
-    - python
+#    - python
     - cython
     - numpy
     - toml
