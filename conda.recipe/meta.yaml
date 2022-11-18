@@ -1,5 +1,5 @@
 {% set name = "bcolz-zipline" %}
-{% set version = "1.2.5" %}
+{% set version = "1.2.6" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: 2afd6c5b2fdf107cc13925458b32844f
+  md5: a1228d9057027fbf57e791461842c800
 
 build:
   number: 0
@@ -22,7 +22,7 @@ requirements:
   host:
     - python
     - cython
-    - numpy <1.23
+    - numpy
     - toml
     - pip
     - setuptools_scm
@@ -34,7 +34,7 @@ test:
   commands:
     - python -c "import bcolz; bcolz.test()"
   requires:
-    - numpy <1.23
+    - numpy
 
 about:
   home: https://github.com/stefan-jansen/bcolz-zipline
