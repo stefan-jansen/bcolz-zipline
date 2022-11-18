@@ -93,17 +93,17 @@ jobs:
           name: artifact
           path: dist
 
-      - name: Publish to PyPI - Test
+      - name: Publish to PyPI
+        if: ${{ github.event.inputs.target }} == 'PYPI' && startsWith(github.ref, 'refs/tags'
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Publish to PyPI - Test
         if: ${{ github.event.inputs.target }} == 'TESTPYPI'
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPITEST_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        if: ${{ github.event.inputs.target }} == 'PYPI' && startsWith(github.ref, 'refs/tags'
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
