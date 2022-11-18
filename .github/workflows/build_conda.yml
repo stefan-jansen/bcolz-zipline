@@ -50,7 +50,7 @@ jobs:
 
       - name: create uploader
         # address broken client under py3.9
-        if: ${{ (matrix.python == '3.9') || (matrix.python == '3.10') }}
+        if: ${{ (matrix.python == '3.9') || (matrix.python == '3.10')  || (matrix.python == '3.11') }}
         run: conda create -n up python=3.7 anaconda-client
 
       - name: conda install
@@ -67,7 +67,7 @@ jobs:
 
       - name: activate uploader
         # address broken client under py3.9
-        if: ${{ (matrix.python == '3.9') || (matrix.python == '3.10') }}
+        if: ${{ (matrix.python == '3.9') || (matrix.python == '3.10') }} || (matrix.python == '3.11') }}
         run: conda activate up
 
       - name: store windows result
