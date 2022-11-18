@@ -6,20 +6,20 @@
 #
 ########################################################################
 
+from sys import version_info as v
+
 import setuptools_scm  # noqa: F401
 import toml  # noqa: F401
-from sys import version_info as v
 
 # Check this Python version is supported
 if any([(3,) < v < (3, 7)]):
     raise Exception("Unsupported Python version %d.%d. Requires Python > 3.6." % v[:2])
 
 import os
-from pathlib import Path
 from glob import glob
 import sys
 
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 from pkg_resources import resource_filename
 
 # For guessing the capabilities of the CPU for C-Blosc
@@ -166,6 +166,5 @@ setup(
         extra_link_args=LFLAGS,
         extra_compile_args=CFLAGS
     )],
-    # install_requires=['numpy>=1.5,<1.23'],
     cmdclass=LazyCommandClass(),
 )
