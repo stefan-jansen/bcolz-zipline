@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       target:
+        type: choice
         description: 'Package Index'
         required: true
-        default: 'TESTPYPI'
+        default: 'PYPI'
+        options: ['TESTPYPI', 'PYPI']
   release:
     types: qq
       - published
