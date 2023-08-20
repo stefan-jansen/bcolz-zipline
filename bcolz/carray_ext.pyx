@@ -1682,7 +1682,7 @@ cdef class carray:
                        expectedlen=newlen,
                        rootdir=rootdir, mode='w')
         if newlen < ilen:
-            rsize = isize / newlen
+            rsize = isize // newlen
             for i from 0 <= i < newlen:
                 out.append(
                     self[i * rsize:(i + 1) * rsize].reshape(newdtype.shape))
