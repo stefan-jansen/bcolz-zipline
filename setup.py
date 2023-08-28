@@ -92,7 +92,7 @@ BLOSC_DIR = os.environ.get('BLOSC_DIR', '')
 inc_dirs = ['bcolz']
 lib_dirs = []
 libs = []
-def_macros = []
+def_macros = [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
 sources = ['bcolz/carray_ext.pyx']
 
 # Handle --blosc=[PATH] --lflags=[FLAGS] --cflags=[FLAGS]
