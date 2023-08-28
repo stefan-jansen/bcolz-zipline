@@ -589,7 +589,7 @@ cdef class chunk:
 
     def __repr__(self):
         """Represent the chunk as an string, with additional info."""
-        cratio = self.nbytes / float(self.cbytes)
+        cratio = self.nbytes // float(self.cbytes)
         fullrepr = "chunk(%s)  nbytes: %d; cbytes: %d; ratio: %.2f\n%r" % \
                    (self.dtype, self.nbytes, self.cbytes, cratio, str(self))
         return fullrepr
@@ -1652,7 +1652,7 @@ cdef class carray:
             if isize == 0:
                 newshape = newshape[:pos] + (0,) + newshape[pos + 1:]
             else:
-                newshape = newshape[:pos] + (isize / osize,) + newshape[
+                newshape = newshape[:pos] + (isize // osize,) + newshape[
                                                                pos + 1:]
             newsize = np.prod(newshape)
 
