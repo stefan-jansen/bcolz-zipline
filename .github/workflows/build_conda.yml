@@ -36,7 +36,7 @@ jobs:
           xcrun --show-sdk-path | ls
 
       - name: Checkout bcolz
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup miniconda3
         uses: conda-incubator/setup-miniconda@v2
