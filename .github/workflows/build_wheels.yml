@@ -61,7 +61,7 @@ jobs:
           CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: wheelhouse/*.whl
 
@@ -79,7 +79,7 @@ jobs:
       - name: Build sdist
         run: pipx run --spec build pyproject-build --sdist
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
 
