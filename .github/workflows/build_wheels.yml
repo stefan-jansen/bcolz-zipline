@@ -32,10 +32,7 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
           fetch-tags: true
-          ref: tags/1.2.9
-
-      - name: Fetch tags
-        run: git fetch --prune --tags
+          ref: main
 
       - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
