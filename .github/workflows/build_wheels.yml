@@ -81,7 +81,9 @@ jobs:
 
       - name: Build sdist
         run: |
-          pipx run build --sdist
+          pip install -U pip setuptools build
+          python -m build --sdist
+
 
       - uses: actions/upload-artifact@v4
         with:
