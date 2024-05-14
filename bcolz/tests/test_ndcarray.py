@@ -653,7 +653,7 @@ class reshapeTest(TestCase):
         """Testing `reshape()` (unidim -> ndim, -1 in newshape (II))"""
         a = np.ones((3, 4), dtype="i4")
         b = bcolz.ones(12, dtype="i4").reshape((3, -1))
-        # print "b->", `b`
+        print("b->", b)
         assert_array_equal(a, b, "Arrays are not equal")
 
     def test01(self):

@@ -1,107 +1,115 @@
-===============
-Releasing bcolz
-===============
+================
+Releasing Blosc
+================
 
 :Author: Francesc Alted
 :Contact: francesc@blosc.org
-:Date: 2014-07-20
+:Date: 2014-01-15
 
 
 Preliminaries
 -------------
 
-* Make sure that ``RELEASE_NOTES.rst`` and ``ANNOUNCE.rst`` are up to
+- Switch to main branch::
+
+    $ git switch main
+
+- Make sure that ``RELEASE_NOTES.rst`` and ``ANNOUNCE.rst`` are up to
   date with the latest news in the release.
 
-* Commit your changes::
+- Check that *VERSION* symbols in blosc/blosc.h contains the correct info.
 
-    $ git commit -a -m"Getting ready for X.Y.Z final"
+- Commit the changes::
 
-* Once a year: check that the copyright year in ``LICENSES/BCOLZ.txt``
-  and in ``docs/conf.py`` is up to date.
-
-
-Tagging
--------
-
-* Create a tag ``X.Y.Z`` from ``master``.  Use the next message::
-
-    $ git tag -a X.Y.Z -m "Tagging version X.Y.Z"
-
-  Note: For release candidates, just add a rcN suffix to tag ("X.Y.ZrcN").
-
-* Or, alternatively, make a signed tag (requires gpg correctly configured)::
-
-    $ git tag -s X.Y.Z -m "Tagging version X.Y.Z"
-
-* Push the tag to the Github repo::
-
+    $ git commit -a -m"Getting ready for X.Y.Z release"
     $ git push
-    $ git push --tags
 
 
 Testing
 -------
 
-* After compiling, run::
+Create a new build/ directory, change into it and issue::
 
-  $ PYTHONPATH=.   (or "set PYTHONPATH=." on Win)
-  $ export PYTHONPATH=.  (not needed on Win)
-  $ python -c "import bcolz; bcolz.test(heavy=True)"
+  $ cmake ..
+  $ cmake --build .
+  $ ctest
 
-* Run the test suite in different platforms (at least Linux and
-  Windows) and make sure that all tests passes.
+To actually test Blosc the hard way, look at the end of:
 
+https://www.blosc.org/pages/synthetic-benchmarks/
 
-Packaging
----------
+where instructions on how to intensively test (and benchmark) Blosc
+are given.
 
-* Make sure that you are in a clean directory.  The best way is to
-  re-clone and re-build::
+Forward compatibility testing
+-----------------------------
 
-  $ cd /tmp
-  $ git clone git@github.com:Blosc/bcolz.git
-  $ cd bcolz
-  $ python setup.py build_ext
+First, go to the compat/ directory and generate a file with the current
+version::
 
-* Check that all Cython generated ``*.c`` files are present.
+  $ cd ../compat
+  $ export LD_LIBRARY_PATH=../build/blosc
+  $ gcc -o filegen filegen.c -L$LD_LIBRARY_PATH -lblosc -I../blosc
+  $ ./filegen compress lz4 blosc-1.y.z-lz4.cdata
 
-* Make the tarball with the command::
+In order to make sure that we are not breaking forward compatibility,
+link and run the `compat/filegen` utility against different versions of
+the Blosc library (suggestion: 1.3.0, 1.7.0, 1.11.1, 1.14.1).
 
-  $ python setup.py sdist
+You can compile the utility with different blosc shared libraries with::
 
-Do a quick check that the tarball is sane.
+  $ export LD_LIBRARY_PATH=shared_blosc_library_path
+  $ gcc -o filegen filegen.c -L$LD_LIBRARY_PATH -lblosc -Iblosc.h_include_path
 
+Then, test the file created with the new version with::
 
-Uploading
----------
+  $ ./filegen decompress blosc-1.y.z-lz4.cdata
 
-* Upload it also in the PyPi repository::
+If that works and you want to keep track of this for future compatibility checks
+just add the new file to the suite::
 
-    $ python setup.py sdist upload
+  $ git add blosc-1.y.z-lz4.cdata
+  $ git commit -m"Add a new cdata file for compatibility checks"
+
+Repeat this for every codec shipped with Blosc (blosclz, lz4, lz4hc, snappy,
+zlib and zstd).
+
+Tagging
+-------
+
+- Create a tag ``X.Y.Z`` from ``main``::
+
+    $ git tag -a vX.Y.Z -m "Tagging version X.Y.Z"
+
+- Push the previous commits and tag to the github repo::
+
+    $ git push
+    $ git push --tags
 
 
 Announcing
 ----------
 
-* Send an announcement to the bcolz, blosc, pydata and python-announce
-  lists.  Use the ``ANNOUNCE.rst`` file as skeleton (or possibly as
-  the definitive version).
-
-* Tweet about the new release and rejoice!
+- Send an announcement to the blosc, pytables-dev, bcolz and
+  comp.compression lists.  Use the ``ANNOUNCE.rst`` file as skeleton
+  (possibly as the definitive version).
 
 
 Post-release actions
 --------------------
 
-* Create new headers for adding new features in ``RELEASE_NOTES.rst``
+- Edit *VERSION* symbols in blosc/blosc.h in main to increment the
+  version to the next minor one (i.e. X.Y.Z --> X.Y.(Z+1).dev).
+
+- Create new headers for adding new features in ``RELEASE_NOTES.rst``
   and add this place-holder instead:
 
   #XXX version-specific blurb XXX#
 
-* Commit your changes with:
+- Commit the changes::
 
-  $ git commit -a -m"Post X.Y.Z release actions done"
+    $ git commit -a -m"Post X.Y.Z release actions done"
+    $ git push
 
 
 That's all folks!

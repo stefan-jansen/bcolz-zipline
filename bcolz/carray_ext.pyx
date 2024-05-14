@@ -1652,7 +1652,7 @@ cdef class carray:
             if isize == 0:
                 newshape = newshape[:pos] + (0,) + newshape[pos + 1:]
             else:
-                newshape = newshape[:pos] + (isize / osize,) + newshape[
+                newshape = newshape[:pos] + (isize // osize,) + newshape[
                                                                pos + 1:]
             newsize = np.prod(newshape)
 
@@ -1682,7 +1682,7 @@ cdef class carray:
                        expectedlen=newlen,
                        rootdir=rootdir, mode='w')
         if newlen < ilen:
-            rsize = isize / newlen
+            rsize = isize // newlen
             for i from 0 <= i < newlen:
                 out.append(
                     self[i * rsize:(i + 1) * rsize].reshape(newdtype.shape))
