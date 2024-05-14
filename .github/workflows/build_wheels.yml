@@ -83,7 +83,9 @@ jobs:
           python-version: '3.10'
 
       - name: Build sdist
-        run: pipx run --spec build pyproject-build --sdist
+        run: |
+          pip install -U pip setuptools build
+          python -m build --sdist        
 
       - uses: actions/upload-artifact@v4
         with:
