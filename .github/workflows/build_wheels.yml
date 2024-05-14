@@ -32,7 +32,7 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
           fetch-tags: true
-          ref: '1.2.9'
+          ref: tags/1.2.9
 
       - name: Fetch tags
         run: git fetch --prune --tags
@@ -84,7 +84,7 @@ jobs:
 
       - name: Build sdist
         run: |
-          pip install -U pip setuptools build
+          pip install -U pip setuptools setuptools_scm build
           python -m build --sdist        
 
       - uses: actions/upload-artifact@v4
