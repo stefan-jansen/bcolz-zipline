@@ -64,7 +64,7 @@ test = [
     "pytest>= 6.2.3",
     "pytest-cov>=2.11.1",
     "coveralls==3.0.1",
-    "setuptools; python_version >= '3.12'"
+    "setuptools"
 ]
 
 
