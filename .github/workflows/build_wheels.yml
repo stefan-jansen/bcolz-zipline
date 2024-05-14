@@ -73,6 +73,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          fetch-tags: true
+          ref: 1.2.9
 
       - uses: actions/setup-python@v5
         name: Install Python
