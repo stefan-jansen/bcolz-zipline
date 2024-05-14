@@ -31,6 +31,9 @@ jobs:
           fetch-tags: true
           ref: 1.2.9
 
+      - name: Get tags
+        run: git fetch --tags origin
+
       - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
         uses: pypa/cibuildwheel@v2.18.0
