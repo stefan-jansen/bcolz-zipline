@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest , windows-latest, macos-latest ]
-        python: [ 38, 39, '310', '311' , '312' ]
+        python: [ "38", "39", '310', '311' , '312' ]
         arch: [ auto64 ]
 
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python }}
 
       - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
