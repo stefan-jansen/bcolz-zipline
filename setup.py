@@ -12,8 +12,8 @@ import setuptools_scm  # noqa: F401
 import toml  # noqa: F401
 
 # Check this Python version is supported
-if any([(3,) < v < (3, 7)]):
-    raise Exception("Unsupported Python version %d.%d. Requires Python > 3.6." % v[:2])
+if any([(3,) < v < (3, 8)]):
+    raise Exception("Unsupported Python version %d.%d. Requires Python > 3.7." % v[:2])
 
 import os
 from glob import glob

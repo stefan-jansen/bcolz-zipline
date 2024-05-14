@@ -1,195 +1,172 @@
-# Blosc: A blocking, shuffling and lossless compression library
-| Author | Contact | URL |
-|--------|---------|-----|
-| Blosc Development Team | blosc@blosc.org | https://www.blosc.org | 
+# bcolz: columnar and compressed data containers
 
-| Gitter | GH Actions | NumFOCUS | Code of Conduct |
-|--------|------------|----------|-----------------|
-| [![Gitter](https://badges.gitter.im/Blosc/c-blosc.svg)](https://gitter.im/Blosc/c-blosc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) | [![CI CMake](https://github.com/Blosc/c-blosc/workflows/CI%20CMake/badge.svg)](https://github.com/Blosc/c-blosc/actions?query=workflow%3A%22CI+CMake%22) | [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](https://numfocus.org) | [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) |
+<p align="center">
+    <a href="https://gitter.im/Blosc/bcolz?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge" target="_blank">
+        <img alt="Gitter" src="https://badges.gitter.im/Blosc/bcolz.svg" />
+    </a>
+    <a href="https://pypi.org/project/bcolz-zipline/" target="_blank">
+        <img alt="Version" src="https://img.shields.io/pypi/v/bcolz-zipline.svg?cacheSeconds=2592000" />
+    </a>
+    <a href="https://bcolz.readthedocs.io/en/latest/" target="_blank">
+        <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+    </a>
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/stefan-jansen/bcolz-zipline/Tests?label=tests"><a href='https://coveralls.io/github/stefan-jansen/bcolz-zipline?branch=main'><img src='https://coveralls.io/repos/github/stefan-jansen/bcolz-zipline/badge.svg?branch=main' alt='Coverage Status' /></a>
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/stefan-jansen/bcolz-zipline/Build%20Wheels?label=PyPI"><a href="#" target="_blank">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/stefan-jansen/bcolz-zipline/Build%20conda%20distribution?label=Anaconda">
+    <img alt="License: BSD" src="https://img.shields.io/badge/License-BSD-yellow.svg" />
+    </a>
+    <a href="https://twitter.com/ml4trading" target="_blank">
+        <img alt="Twitter: @ml4t" src="https://img.shields.io/twitter/follow/ml4trading.svg?style=social" />
+    </a>
+    <a href="http://blosc.org" target="_blank">
+        <img alt="Blosc" src="http://b.repl.ca/v1/Powered--By-Blosc-blue.png" />
+    </a>
+</p>
 
-## What is it?
 
-Blosc is a high performance compressor optimized for binary data.
-It has been designed to transmit data to the processor cache faster
-than the traditional, non-compressed, direct memory fetch approach via
-a memcpy() OS call.  Blosc is the first compressor (that I'm aware of)
-that is meant not only to reduce the size of large datasets on-disk or
-in-memory, but also to accelerate memory-bound computations.
+<p align="center">
+<a href="https://www.amazon.com/Machine-Learning-Algorithmic-Trading-alternative/dp/1839217715?pf_rd_r=GZH2XZ35GB3BET09PCCA&pf_rd_p=c5b6893a-24f2-4a59-9d4b-aff5065c90ec&pd_rd_r=91a679c7-f069-4a6e-bdbb-a2b3f548f0c8&pd_rd_w=2B0Q0&pd_rd_wg=GMY5S&ref_=pd_gw_ci_mcx_mr_hp_d">
+<img src="https://imgur.com/g8emkEZ.png" width="35%">
+</a>
+</p>
 
-It uses the [blocking technique](https://www.blosc.org/docs/StarvingCPUs-CISE-2010.pdf)
-so as to reduce activity in the memory bus as much as possible. In short, this
-technique works by dividing datasets in blocks that are small enough
-to fit in caches of modern processors and perform compression /
-decompression there.  It also leverages, if available, SIMD
-instructions (SSE2, AVX2) and multi-threading capabilities of CPUs, in
-order to accelerate the compression / decompression process to a
-maximum.
+bcolz provides columnar, chunked data containers that can be compressed either in-memory and on-disk. Column storage allows for efficiently querying tables, as well as for cheap column addition and removal. It is based on [NumPy](http://www.numpy.org), and uses it as the standard data container to communicate with bcolz objects, but it also comes with support for import/export facilities to/from [HDF5/PyTables tables](http://www.pytables.org) and [pandas dataframes](http://pandas.pydata.org).
 
-See some [benchmarks](https://www.blosc.org/pages/synthetic-benchmarks/) about Blosc performance.
+bcolz objects are compressed by default not only for reducing memory/disk storage, but also to improve I/O speed. The compression process is carried out internally by [Blosc](http://blosc.org), a high-performance, multithreaded meta-compressor that is optimized for binary data (although it works with text data just fine too).
 
-Blosc is distributed using the BSD license, see LICENSE.txt for
-details.
+bcolz can also use [numexpr](https://github.com/pydata/numexpr)
+internally (it does that by default if it detects numexpr installed) or
+[dask](https://github.com/dask/dask) so as to accelerate many vector and query operations (although it can use pure NumPy for doing so too). numexpr/dask can optimize the memory usage and use multithreading for doing the computations, so it is blazing fast. This, in combination with carray/ctable disk-based, compressed containers, can be used for performing out-of-core computations efficiently, but most importantly
+*transparently*.
 
-## Meta-compression and other differences over existing compressors
+Just to whet your appetite, [here is an example](http://nbviewer.ipython.org/github/Blosc/movielens-bench/blob/master/querying-ep14.ipynb)
+with real data, where bcolz is already fulfilling the promise of accelerating memory I/O by using compression.
 
-C-Blosc is not like other compressors: it should rather be called a
-meta-compressor.  This is so because it can use different compressors
-and filters (programs that generally improve compression ratio).  At
-any rate, it can also be called a compressor because it happens that
-it already comes with several compressor and filters, so it can
-actually work like a regular codec.
+## Rationale
 
-Currently C-Blosc comes with support of BloscLZ, a compressor heavily
-based on FastLZ (https://ariya.github.io/FastLZ/), LZ4 and LZ4HC
-(http://www.lz4.org/), Snappy
-(https://google.github.io/snappy/), Zlib (https://zlib.net/) and
-Zstandard (https://facebook.github.io/zstd/).
+By using compression, you can deal with more data using the same amount of memory, which is very good on itself. But in case you are wondering about the price to pay in terms of performance, you should know that nowadays memory access is the most common bottleneck in many computational scenarios, and that CPUs spend most of its time waiting for data. Hence, having data compressed in memory can reduce the stress of the memory subsystem as well.
 
-C-Blosc also comes with highly optimized (they can use
-SSE2 or AVX2 instructions, if available) shuffle and bitshuffle filters
-(for info on how and why shuffling works [see here](https://www.slideshare.net/PyData/blosc-py-data-2014/17?src=clipshare)).
-However, additional compressors or filters may be added in the future.
+Furthermore, columnar means that the tabular datasets are stored column-wise order, and this turns out to offer better opportunities to improve compression ratio. This is because data tends to expose more similarity in elements that sit in the same column rather than those in the same row, so compressors generally do a much better job when data is aligned in such column-wise order. In addition, when you have to deal with tables with a large number of columns and your operations only involve some
+of them, a columnar-wise storage tends to be much more effective because minimizes the amount of data that travels to CPU caches.
 
-Blosc is in charge of coordinating the different compressor and
-filters so that they can leverage the 
-[blocking technique](https://www.blosc.org/docs/StarvingCPUs-CISE-2010.pdf)
-as well as multi-threaded execution (if several cores are
-available) automatically. That makes that every codec and filter
-will work at very high speeds, even if it was not initially designed
-for doing blocking or multi-threading.
+So, the ultimate goal for bcolz is not only reducing the memory needs of large arrays/tables, but also making bcolz operations to go faster than using a traditional data container like those in NumPy or Pandas. That is actually already the case in some real-life scenarios (see the notebook above) but that will become pretty more noticeable in combination with forthcoming, faster CPUs integrating more cores and wider vector units.
 
-Finally, C-Blosc is specially suited to deal with binary data because
-it can take advantage of the type size meta-information for improved
-compression ratio by using the integrated shuffle and bitshuffle filters.
+## Requisites
 
-When taken together, all these features set Blosc apart from other
-compression libraries.
+- Python >= 3.8
+- NumPy >= 1.16.5, <1.23 (1.23 is not supported yet)
+- Cython >= 0.22 (Python 3.12 > 3) (just for compiling the beast)
+- C-Blosc >= 1.8.0 (optional, as the internal Blosc will be used by default)
 
-## Compiling the Blosc library
+Optional:
 
-Blosc can be built, tested and installed using CMake_.
-The following procedure describes the "out of source" build.
+- numexpr >= 2.5.2
+- dask >= 0.9.0
+- pandas
+- tables (pytables)
 
-```console
+## Installing as wheel
 
-  $ cd c-blosc
-  $ mkdir build
-  $ cd build
+There are wheels for Linux and Mac OS X that you can install with
+
+```python
+pip install bcolz-zipline
 ```
 
-Now run CMake configuration and optionally specify the installation
-directory (e.g. '/usr' or '/usr/local'):
+Then also install NumPy with
 
-```console
+and test your installation with
 
-  $ cmake -DCMAKE_INSTALL_PREFIX=your_install_prefix_directory ..
+```python
+python -c 'import bcolz;bcolz.test()'
 ```
 
-CMake allows to configure Blosc in many different ways, like preferring
-internal or external sources for compressors or enabling/disabling
-them.  Please note that configuration can also be performed using UI
-tools provided by [CMake](https://cmake.org) (ccmake or cmake-gui):
+## Building
 
-```console
+There are different ways to compile bcolz, depending on whether you want to link with an already installed Blosc library or not.
 
-  $ ccmake ..      # run a curses-based interface
-  $ cmake-gui ..   # run a graphical interface
+### Compiling with an installed Blosc library (recommended)
+
+Python and Blosc-powered extensions have a difficult relationship when compiled using GCC, so this is why using an external C-Blosc library is recommended for maximum performance (for details, see
+<https://github.com/Blosc/python-blosc/issues/110>).
+
+Go to <https://github.com/Blosc/c-blosc/releases> and download and install the C-Blosc library. Then, you can tell bcolz where is the C-Blosc library in a couple of ways:
+
+Using an environment variable:
+
+``` {.sourceCode .console}
+$ BLOSC_DIR=/usr/local     (or "set BLOSC_DIR=\blosc" on Win)
+$ export BLOSC_DIR         (not needed on Win)
+$ python setup.py build_ext --inplace
 ```
 
-Build, test and install Blosc:
+Using a flag:
 
-
-```console
-
-  $ cmake --build .
-  $ ctest
-  $ cmake --build . --target install
+``` {.sourceCode .console}
+$ python setup.py build_ext --inplace --blosc=/usr/local
 ```
 
-The static and dynamic version of the Blosc library, together with
-header files, will be installed into the specified
-CMAKE_INSTALL_PREFIX.
+### Compiling without an installed Blosc library
 
-### Codec support with CMake
+bcolz also comes with the Blosc sources with it so, assuming that you have a C++ compiler installed, do:
 
-C-Blosc comes with full sources for LZ4, LZ4HC, Snappy, Zlib and Zstd
-and in general, you should not worry about not having (or CMake
-not finding) the libraries in your system because by default the
-included sources will be automatically compiled and included in the
-C-Blosc library. This effectively means that you can be confident in
-having a complete support for all the codecs in all the Blosc deployments
-(unless you are explicitly excluding support for some of them).
-
-But in case you want to force Blosc to use external codec libraries instead of
-the included sources, you can do that:
-
-``` console
-
-  $ cmake -DPREFER_EXTERNAL_ZSTD=ON ..
+``` {.sourceCode .console}
+$ python setup.py build_ext --inplace
 ```
 
-You can also disable support for some compression libraries:
+That\'s all. You can proceed with testing section now.
 
+Note: The requirement for the C++ compiler is just for the Snappy dependency. The rest of the other components of Blosc are pure C
+(including the LZ4 and Zlib libraries).
 
-```console
+## Testing
 
-  $ cmake -DDEACTIVATE_SNAPPY=ON ..  # in case you don't have a C++ compiler
-```
- 
-## Examples
+After compiling, you can quickly check that the package is sane by running:
 
-In the [examples/ directory](https://github.com/Blosc/c-blosc/tree/master/examples)
-you can find hints on how to use Blosc inside your app.
+    $ PYTHONPATH=.   (or "set PYTHONPATH=." on Windows)
+    $ export PYTHONPATH    (not needed on Windows)
+    $ python -c "import bcolz; bcolz.test()"  # add `heavy=True` if desired
 
-## Supported platforms
+## Installing
 
-Blosc is meant to support all platforms where a C89 compliant C
-compiler can be found.  The ones that are mostly tested are Intel
-(Linux, Mac OSX and Windows) and ARM (Linux), but exotic ones as IBM
-Blue Gene Q embedded "A2" processor are reported to work too.
+Install it as a typical Python package:
 
-### Mac OSX troubleshooting
+    $ pip install -U .
 
-If you run into compilation troubles when using Mac OSX, please make
-sure that you have installed the command line developer tools.  You
-can always install them with:
+Optionally Install the additional dependencies:
 
-```console
+    $ pip install .[optional]pip 
 
-  $ xcode-select --install
-```
+## Documentation
 
-## Wrapper for Python
+You can find the online manual at:
 
-Blosc has an official wrapper for Python.  See:
+<http://bcolz.blosc.org>
 
-https://github.com/Blosc/python-blosc
+but of course, you can always access docstrings from the console (i.e.
+`help(bcolz.ctable)`).
 
-## Command line interface and serialization format for Blosc
+Also, you may want to look at the bench/ directory for some examples of use.
 
-Blosc can be used from command line by using Bloscpack.  See:
+## Resources
 
-https://github.com/Blosc/bloscpack
+Visit the main bcolz site repository at: <http://github.com/Blosc/bcolz>
 
-## Filter for HDF5
+Home of Blosc compressor: <http://blosc.org>
 
-For those who want to use Blosc as a filter in the HDF5 library,
-there is a sample implementation in the hdf5-blosc project in:
+User\'s mail list: <http://groups.google.com/group/bcolz>
+(<bcolz@googlegroups.com>)
 
-https://github.com/Blosc/hdf5-blosc
+An [introductory talk (20 min)](https://www.youtube.com/watch?v=-lKV4zC1gss) about bcolz at EuroPython
 
-## Mailing list
+2014. [Slides here](http://blosc.org/docs/bcolz-EuroPython-2014.pdf).
 
-There is an official mailing list for Blosc at:
+## License
 
-blosc@googlegroups.com
-https://groups.google.com/g/blosc
+Please see `BCOLZ.txt` in `LICENSES/` directory.
 
-## Acknowledgments
+## Share your experience
 
-See THANKS.rst.
+Let us know of any bugs, suggestions, gripes, kudos, etc. you may have.
 
-
-----
-
-  **Enjoy data!**
+**Enjoy Data!**
