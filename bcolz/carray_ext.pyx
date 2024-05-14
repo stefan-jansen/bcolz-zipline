@@ -589,7 +589,7 @@ cdef class chunk:
 
     def __repr__(self):
         """Represent the chunk as an string, with additional info."""
-        cratio = self.nbytes / float(self.cbytes)
+        cratio = self.nbytes // float(self.cbytes)
         fullrepr = "chunk(%s)  nbytes: %d; cbytes: %d; ratio: %.2f\n%r" % \
                    (self.dtype, self.nbytes, self.cbytes, cratio, str(self))
         return fullrepr
@@ -1173,7 +1173,7 @@ cdef class carray:
                 raise NotImplementedError(
                     "creating carrays from scalar objects is not supported")
         try:
-            self.expectedlen = expectedlen
+            self.expectedlen = <long> expectedlen
         except OverflowError:
             raise OverflowError(
                 "The size cannot be larger than 2**31 on 32-bit platforms")
@@ -1544,7 +1544,7 @@ cdef class carray:
         atomsize = self.atomsize
         chunks = self.chunks
         leftover = self.leftover
-        bsize = nitems * atomsize
+        bsize = <int> nitems * atomsize
         cbytes = 0
 
         # Check if items belong to the last chunk
@@ -1648,7 +1648,7 @@ cdef class carray:
             if newshape.count(-1) > 1:
                 raise ValueError("only one shape dimension can be -1")
             pos = newshape.index(-1)
-            osize = np.prod(newshape[:pos] + newshape[pos + 1:])
+            osize = <int> np.prod(newshape[:pos] + newshape[pos + 1:])
             if isize == 0:
                 newshape = newshape[:pos] + (0,) + newshape[pos + 1:]
             else:
@@ -2034,8 +2034,8 @@ cdef class carray:
         nchunks = <npy_intp> cython.cdiv(self._nbytes, self._chunksize)
         if self.leftover > 0:
             nchunks += 1
-        first_chunk = <npy_intp> cython.cdiv(start, self.chunklen)
-        last_chunk = <npy_intp> cython.cdiv(stop, self.chunklen) + 1
+        first_chunk = <npy_intp> <int> cython.cdiv(start, self.chunklen)
+        last_chunk = <npy_intp> <int> cython.cdiv(stop, self.chunklen) + 1
         last_chunk = min(last_chunk, nchunks)
         for nchunk from first_chunk <= nchunk < last_chunk:
             # Compute start & stop for each block
@@ -2200,8 +2200,8 @@ cdef class carray:
         nchunks = <npy_intp> cython.cdiv(self._nbytes, self._chunksize)
         if self.leftover > 0:
             nchunks += 1
-        first_chunk = <npy_intp> cython.cdiv(start, self.chunklen)
-        last_chunk = <npy_intp> cython.cdiv(stop, self.chunklen) + 1
+        first_chunk = <npy_intp> <int> cython.cdiv(start, self.chunklen)
+        last_chunk = <npy_intp> <int> cython.cdiv(stop, self.chunklen) + 1
         last_chunk = min(last_chunk, nchunks)
         for nchunk from first_chunk <= nchunk < last_chunk:
             # Compute start & stop for each block

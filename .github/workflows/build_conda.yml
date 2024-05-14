@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup miniconda3
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           auto-update-conda: true
@@ -70,7 +70,7 @@ jobs:
         run: conda activate up
 
       - name: store windows result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'windows-latest' }}
         with:
           path: win-64/*.tar.bz2
@@ -80,7 +80,7 @@ jobs:
         run: anaconda upload -l main -u ml4t win-64/*.tar.bz2
 
       - name: store linux result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'ubuntu-latest' }}
         with:
           path: linux-64/*.tar.bz2
@@ -90,7 +90,7 @@ jobs:
         run: anaconda upload -l main -u ml4t linux-64/*.tar.bz2
 
       - name: store macos result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ matrix.os == 'macos-latest' }}
         with:
           path: osx-64/*.tar.bz2
