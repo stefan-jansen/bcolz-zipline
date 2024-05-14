@@ -53,9 +53,9 @@ So, the ultimate goal for bcolz is not only reducing the memory needs of large a
 
 ## Requisites
 
-- Python >= 3.7
+- Python >= 3.8
 - NumPy >= 1.16.5, <1.23 (1.23 is not supported yet)
-- Cython >= 0.22 (just for compiling the beast)
+- Cython >= 0.22 (Python 3.12 > 3) (just for compiling the beast)
 - C-Blosc >= 1.8.0 (optional, as the internal Blosc will be used by default)
 
 Optional:

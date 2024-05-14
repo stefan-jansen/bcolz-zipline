@@ -543,15 +543,15 @@ static int initialize_decompress_func(struct blosc_context* context) {
     return 0;
   }
 #endif /*  HAVE_LZ4 */
-//#if defined(HAVE_SNAPPY)
-//  if (compformat == BLOSC_SNAPPY_FORMAT) {
-//    if (compversion != BLOSC_SNAPPY_VERSION_FORMAT) {
-//      return -9;
-//    }
-//    context->decompress_func = &snappy_wrap_decompress;
-//    return 0;
-//  }
-//#endif /*  HAVE_SNAPPY */
+#if defined(HAVE_SNAPPY)
+  if (compformat == BLOSC_SNAPPY_FORMAT) {
+    if (compversion != BLOSC_SNAPPY_VERSION_FORMAT) {
+      return -9;
+    }
+    context->decompress_func = &snappy_wrap_decompress;
+    return 0;
+  }
+#endif /*  HAVE_SNAPPY */
 #if defined(HAVE_ZLIB)
   if (compformat == BLOSC_ZLIB_FORMAT) {
     if (compversion != BLOSC_ZLIB_VERSION_FORMAT) {
