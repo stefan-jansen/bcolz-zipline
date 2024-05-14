@@ -15,7 +15,7 @@ on:
 
 jobs:
   build_wheels:
-    name: Wheels for py${{ matrix.python }} on ${{ matrix.os }} - upload to ${{github.event.inputs.target}}
+    name: Wheels for ${{ matrix.python }} on ${{ matrix.os }} - upload to ${{github.event.inputs.target}}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -61,7 +61,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: pypa/cibuildwheel@v2.18.0
         env:
-          CIBW_BUILD: 'cp38-win_amd64 cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64'
+          CIBW_BUILD: "${{ matrix.python }}-win_amd64"
           CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
 
       - name: Upload wheels
@@ -87,6 +87,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
+          overwrite: true
 
   upload_pypi:
     name: Upload to ${{github.event.inputs.target}}
