@@ -31,13 +31,11 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 0
-          ref: '1.2.9'
           fetch-tags: true
+          ref: '1.2.9'
 
-#      - name: Setup Python
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: ${{ matrix.python }}
+      - name: Fetch tags
+        run: git fetch --prune --unshallow --tags
 
       - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
