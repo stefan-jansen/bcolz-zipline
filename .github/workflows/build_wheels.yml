@@ -50,6 +50,7 @@ jobs:
           CIBW_SKIP: "*-musllinux_*"
           CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
           CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+          CIBW_BEFORE_TEST: pip install -U setuptools
 
       - name: Install MSVC amd64
         if: runner.os == 'Windows'
@@ -63,6 +64,7 @@ jobs:
         env:
           CIBW_BUILD: "${{ matrix.python }}-win_amd64"
           CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+          CIBW_BEFORE_TEST: pip install -U setuptools
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
