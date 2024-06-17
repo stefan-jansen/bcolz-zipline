@@ -36,7 +36,7 @@ jobs:
 
       - name: Wheels macOS / Linux
         if: runner.os != 'Windows'
-        uses: pypa/cibuildwheel@v2.18.0
+        uses: pypa/cibuildwheel@v2.19.1
         env:
           CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
@@ -55,7 +55,7 @@ jobs:
 
       - name: Wheels Windows
         if: runner.os == 'Windows'
-        uses: pypa/cibuildwheel@v2.18.0
+        uses: pypa/cibuildwheel@v2.19.1
         env:
           CIBW_BUILD: "${{ matrix.python }}-win_amd64"
           CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
