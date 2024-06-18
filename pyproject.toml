@@ -3,7 +3,7 @@ name = "bcolz-zipline"
 dynamic = ["version"]
 requires-python = ">=3.7"
 dependencies = [
-    "numpy >=1.16"
+    "numpy >=1.16,<2.0.0"
 ]
 
 description = "Columnar and compressed data containers."
