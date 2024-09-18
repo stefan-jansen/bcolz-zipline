@@ -1253,7 +1253,7 @@ class ctable(object):
         elif hasattr(key, "dtype"):
             if key.dtype.type == np.bool_:
                 return self._where(key)
-            elif np.issubsctype(key, np.integer):
+            elif np.issubdtype(key.dtype, np.integer):
                 # An integer array
                 return np.array([tuple(self[i]) for i in key], dtype=self.dtype)
             else:
