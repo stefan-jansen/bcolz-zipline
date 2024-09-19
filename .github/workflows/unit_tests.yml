@@ -31,15 +31,6 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: List Files
-        id: list-files
-        uses: mirko-felice/list-files-action@v3.0.5
-        with:
-          repo: ${{ github.repository }}
-          ref: ${{ github.ref }}
-          path: "c-blosc"
-          ext: ".c"
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -48,6 +39,7 @@ jobs:
       - name: Install bcolz
         run: |
           python -VV
+          find . -type f -name '*.c' | sed 's|.*\.||' | sort -u
           python -m pip install --upgrade pip wheel setuptools
           pip install -e .[test] --verbose
         env:
