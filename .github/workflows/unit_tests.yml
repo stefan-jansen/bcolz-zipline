@@ -39,7 +39,7 @@ jobs:
       - name: Install bcolz
         run: |
           python -VV
-          find c-blosc/. -name '*.c'
+          find c-blosc -name '*.c'
           python -m pip install --upgrade pip wheel setuptools
           pip install -e .[test] --verbose
         env:
