@@ -28,7 +28,7 @@ jobs:
       - name: Checkout bcolz-zipline
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: 'recursive'
           fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
