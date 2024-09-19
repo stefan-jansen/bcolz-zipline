@@ -14,6 +14,9 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    outputs:
+      paths: ${{ steps.list-files.outputs.paths }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -27,6 +30,15 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 0
+
+      - name: List Files
+        id: list-files
+        uses: mirko-felice/list-files-action@v3.0.5
+        with:
+          repo: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          path: "c-blosc"
+          ext: ".c"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
