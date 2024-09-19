@@ -59,7 +59,7 @@ jobs:
         run: |
           python -VV
           python -m pip install --upgrade pip wheel setuptools
-          pip install -e .[test] --verbose --no-cache-dir
+          pip install -e .[test] --verbose
         env:
           DISABLE_BCOLZ_AVX2: true
 
