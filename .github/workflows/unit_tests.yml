@@ -29,6 +29,29 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+
+      - name: Install c-blosc on Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libblosc-dev
+
+      - name: Install c-blosc on macOS
+        if: matrix.os == 'macos-latest'
+        run: brew install c-blosc
+
+      - name: Install c-blosc on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          git clone https://github.com/Blosc/c-blosc.git
+          cd c-blosc
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --config Release
+          cmake --install . --prefix "C:\Program Files\c-blosc"
+
       - name: Install bcolz
         run: |
           python -VV
