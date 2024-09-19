@@ -8,6 +8,7 @@
 
 from sys import version_info as v
 
+import numpy
 import setuptools_scm  # noqa: F401
 import toml  # noqa: F401
 
@@ -18,9 +19,8 @@ if any([(3,) < v < (3, 8)]):
 import os
 from glob import glob
 import sys
-
+import platform
 from setuptools import setup, Extension
-from pkg_resources import resource_filename
 
 # For guessing the capabilities of the CPU for C-Blosc
 try:
@@ -31,57 +31,6 @@ try:
 except:
     cpu_info = {'flags': []}
 
-
-class LazyCommandClass(dict):
-    """
-    Lazy command class that defers operations requiring Cython and numpy until
-    they've actually been downloaded and installed by setup_requires.
-    """
-
-    def __contains__(self, key):
-        return (
-                key == 'build_ext'
-                or super(LazyCommandClass, self).__contains__(key)
-        )
-
-    def __setitem__(self, key, value):
-        if key == 'build_ext':
-            raise AssertionError("build_ext overridden!")
-        super(LazyCommandClass, self).__setitem__(key, value)
-
-    def __getitem__(self, key):
-        if key != 'build_ext':
-            return super(LazyCommandClass, self).__getitem__(key)
-
-        from Cython.Distutils import build_ext as cython_build_ext
-
-        class build_ext(cython_build_ext):
-            """
-            Custom build_ext command that lazily adds numpy's include_dir to
-            extensions.
-            """
-
-            def build_extensions(self):
-                """
-                Lazily append numpy's include directory to Extension includes.
-
-                This is done here rather than at module scope because setup.py
-                may be run before numpy has been installed, in which case
-                importing numpy and calling `numpy.get_include()` will fail.
-                """
-                numpy_incl = resource_filename('numpy', 'core/include')
-                for ext in self.extensions:
-                    ext.include_dirs.append(numpy_incl)
-
-                # This explicitly calls the superclass method rather than the
-                # usual super() invocation because distutils' build_class, of
-                # which Cython's build_ext is a subclass, is an old-style class
-                # in Python 2, which doesn't support `super`.
-                cython_build_ext.build_extensions(self)
-
-        return build_ext
-
-
 # Global variables
 CFLAGS = os.environ.get('CFLAGS', '').split()
 LFLAGS = os.environ.get('LFLAGS', '').split()
@@ -89,7 +38,7 @@ LFLAGS = os.environ.get('LFLAGS', '').split()
 BLOSC_DIR = os.environ.get('BLOSC_DIR', '')
 
 # Sources & libraries
-inc_dirs = ['bcolz']
+inc_dirs = ['bcolz', numpy.get_include()]
 lib_dirs = []
 libs = []
 def_macros = [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
@@ -153,11 +102,21 @@ else:
 if os.getenv('TRAVIS') and os.getenv('CI') and v[0:2] == (2, 7):
     CFLAGS.extend(["-fprofile-arcs", "-ftest-coverage"])
     LFLAGS.append("-lgcov")
+
 CFLAGS.append('-std=gnu99')
+
+# Disable Zstd assembly optimizations to resolve linking issues
+# This addresses a problem with undefined references to assembly functions
+# in certain build environments, particularly when compiling against numpy 2.0
+# While this may slightly reduce Zstd compression/decompression performance,
+# it significantly improves build compatibility across different systems
+
+if platform.machine() in ['x86_64', 'AMD64']:
+    CFLAGS.append('-DZSTD_DISABLE_ASM')
 
 setup(
     ext_modules=[Extension(
-        'bcolz.carray_ext',
+        name='bcolz.carray_ext',
         include_dirs=inc_dirs,
         define_macros=def_macros,
         sources=sources,
@@ -166,5 +125,4 @@ setup(
         extra_link_args=LFLAGS,
         extra_compile_args=CFLAGS
     )],
-    cmdclass=LazyCommandClass(),
 )
