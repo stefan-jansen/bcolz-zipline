@@ -63,17 +63,6 @@ jobs:
         env:
           DISABLE_BCOLZ_AVX2: true
 
-      - name: Check library versions and paths
-        run: |
-          ldconfig -p | grep lz4
-          ldconfig -p | grep blosc
-          ldconfig -p | grep lzma
-          ldconfig -p | grep zstd
-
-      - name: Check LZ4 library symbols
-        run: |
-          nm -D /usr/lib/x86_64-linux-gnu/liblz4.so | grep LZ4_compress_HC          
-
       - name: Run tests
         run: pytest --cov
 
