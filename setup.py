@@ -11,16 +11,15 @@ from sys import version_info as v
 import numpy
 import setuptools_scm  # noqa: F401
 import toml  # noqa: F401
-
-# Check this Python version is supported
-if any([(3,) < v < (3, 8)]):
-    raise Exception("Unsupported Python version %d.%d. Requires Python > 3.7." % v[:2])
-
 import os
 from glob import glob
 import sys
 import platform
 from setuptools import setup, Extension
+
+# Check this Python version is supported
+if any([(3,) < v < (3, 8)]):
+    raise Exception("Unsupported Python version %d.%d. Requires Python > 3.7." % v[:2])
 
 # For guessing the capabilities of the CPU for C-Blosc
 try:
@@ -113,6 +112,10 @@ CFLAGS.append('-std=gnu99')
 
 if platform.machine() in ['x86_64', 'AMD64']:
     CFLAGS.append('-DZSTD_DISABLE_ASM')
+
+print(sources)
+print(inc_dirs)
+print(def_macros)
 
 setup(
     ext_modules=[Extension(
