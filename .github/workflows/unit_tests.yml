@@ -31,33 +31,35 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
 
-      - name: Install c-blosc on Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install libblosc-dev liblz4-dev liblzma-dev libzstd-dev
-
-      - name: Install c-blosc on macOS
-        if: matrix.os == 'macos-latest'
-        run: brew install c-blosc
-
-      - name: Install c-blosc on Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-          git clone https://github.com/Blosc/c-blosc.git
-          cd c-blosc
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build . --config Release
-          cmake --install . --prefix "C:\Program Files\c-blosc"
+#      - name: Install c-blosc on Linux
+#        if: matrix.os == 'ubuntu-latest'
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install libblosc-dev liblz4-dev liblzma-dev libzstd-dev
+#
+#      - name: Install c-blosc on macOS
+#        if: matrix.os == 'macos-latest'
+#        run: brew install c-blosc
+#
+#      - name: Install c-blosc on Windows
+#        if: matrix.os == 'windows-latest'
+#        run: |
+#          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+#          git clone https://github.com/Blosc/c-blosc.git
+#          cd c-blosc
+#          mkdir build
+#          cd build
+#          cmake ..
+#          cmake --build . --config Release
+#          cmake --install . --prefix "C:\Program Files\c-blosc"
 
       - name: Install bcolz
         run: |
           python -VV
           python -m pip install --upgrade pip wheel setuptools
-          pip install  --no-binary :all: -e .[test]
+          rm -rf build/ dist/ *.egg-info/
+          python setup.py clean --all
+          pip install -e .[test] --verbose --no-cache-dir
         env:
           DISABLE_BCOLZ_AVX2: true
 
