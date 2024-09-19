@@ -63,20 +63,16 @@ if BLOSC_DIR != '':
     libs += ['blosc']
 else:
     # Compiling everything from sources
-    print('Using internal c-blosc sources')
     sources += [f for f in glob('c-blosc/blosc/*.c')
                 if 'avx2' not in f and 'sse2' not in f]
     sources += glob('c-blosc/internal-complibs/lz4*/*.c')
-    # sources += glob('c-blosc/internal-complibs/snappy*/*.cc')
     sources += glob('c-blosc/internal-complibs/zlib*/*.c')
     sources += glob('c-blosc/internal-complibs/zstd*/*/*.c')
-    print(f'Using sources: {sources}')
     inc_dirs += [os.path.join('c-blosc', 'blosc')]
     inc_dirs += [d for d in glob('c-blosc/internal-complibs/*')
                  if os.path.isdir(d)]
     inc_dirs += [d for d in glob('c-blosc/internal-complibs/zstd*/*')
                  if os.path.isdir(d)]
-    print(f'Using include dirs: {inc_dirs}')
     def_macros += [('HAVE_LZ4', 1), ('HAVE_ZLIB', 1), ('HAVE_ZSTD', 1)]
 
     # Guess SSE2 or AVX2 capabilities
@@ -115,10 +111,6 @@ CFLAGS.append('-std=gnu99')
 
 if platform.machine() in ['x86_64', 'AMD64']:
     CFLAGS.append('-DZSTD_DISABLE_ASM')
-
-print(sources)
-print(inc_dirs)
-print(def_macros)
 
 setup(
     ext_modules=[Extension(
