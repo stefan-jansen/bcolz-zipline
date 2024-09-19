@@ -57,8 +57,6 @@ jobs:
         run: |
           python -VV
           python -m pip install --upgrade pip wheel setuptools
-          rm -rf build/ dist/ *.egg-info/
-          python setup.py clean --all
           pip install -e .[test] --verbose --no-cache-dir
         env:
           DISABLE_BCOLZ_AVX2: true
