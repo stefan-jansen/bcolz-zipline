@@ -6,7 +6,7 @@
   Creation date: 2010-06-07
   Author: Francesc Alted <francesc@blosc.org>
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 #ifndef BLOSC_TEST_COMMON_H
@@ -35,7 +35,7 @@
 #endif
 
 
-/* This is MinUnit in action (http://www.jera.com/techinfo/jtns/jtn002.html) */
+/* This is MinUnit in action (https://jera.com/techinfo/jtns/jtn002) */
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
 #define mu_run_test(test) do \
     { const char *message = test(); tests_run++;                          \
@@ -54,7 +54,7 @@ extern int tests_run;
 
 /** Allocates a block of memory with the specified size and alignment.
     The allocated memory is 'cleaned' before returning to avoid
-    accidental re-use of data within or between tests.
+    accidental reuse of data within or between tests.
  */
 static void* blosc_test_malloc(const size_t alignment, const size_t size)
 {

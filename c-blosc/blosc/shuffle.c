@@ -4,7 +4,7 @@
   Author: Francesc Alted <francesc@blosc.org>
   Creation date: 2009-05-20
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 #include "shuffle.h"
@@ -34,6 +34,7 @@ typedef unsigned char bool;
     __GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 #define HAVE_CPU_FEAT_INTRIN
 #endif
+
 
 /*  Include hardware-accelerated shuffle/unshuffle routines based on
     the target architecture. Note that a target architecture may support
@@ -76,8 +77,10 @@ typedef enum {
 } blosc_cpu_features;
 
 /*  Detect hardware and set function pointers to the best shuffle/unshuffle
-    implementations supported by the host processor. */
-#if defined(SHUFFLE_AVX2_ENABLED) || defined(SHUFFLE_SSE2_ENABLED)    /* Intel/i686 */
+    implementations supported by the host processor for Intel/i686
+     */
+#if (defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)) \
+    && (defined(SHUFFLE_AVX2_ENABLED) || defined(SHUFFLE_SSE2_ENABLED))
 
 /*  Disabled the __builtin_cpu_supports() call, as it has issues with
     new versions of gcc (like 5.3.1 in forthcoming ubuntu/xenial:
@@ -174,8 +177,6 @@ blosc_internal_cpuidex(int32_t cpuInfo[4], int32_t function_id, int32_t subfunct
 
 #define _XCR_XFEATURE_ENABLED_MASK 0
 
-#if !(defined(_IMMINTRIN_H_INCLUDED) && (BLOSC_GCC_VERSION >= 900))
-
 /* Reads the content of an extended control register.
    https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family
 */
@@ -195,11 +196,6 @@ blosc_internal_xgetbv(uint32_t xcr) {
   return ((uint64_t)edx << 32) | eax;
 }
 
-#else
-
-#define blosc_internal_xgetbv _xgetbv
-
-#endif  // !(defined(_IMMINTRIN_H_INCLUDED) && (BLOSC_GCC_VERSION >= 900))
 #endif  /* defined(_MSC_FULL_VER) */
 
 #ifndef _XCR_XFEATURE_ENABLED_MASK

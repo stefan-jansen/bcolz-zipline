@@ -10,9 +10,11 @@
 #   BUILD_TESTS: default ON
 #       build test programs and generates the "test" target
 #   BUILD_FUZZERS: default ON
-#       build fuzz test programs and generates the "test" target
+#       build fuzz test programs and generates the "fuzz" target
 #   BUILD_BENCHMARKS: default ON
 #       build the benchmark program
+#   HIDE_SYMBOLS: default ON
+#       hide the symbols that aren't specifically exported
 #   DEACTIVATE_SSE2: default OFF
 #       do not attempt to build with SSE2 instructions
 #   DEACTIVATE_AVX2: default OFF
@@ -31,10 +33,10 @@
 #       when found, use the installed LZ4 libs instead of included
 #       sources
 #   PREFER_EXTERNAL_ZLIB: default OFF
-#       when found, use the installed zlib libs instead of included
+#       when found, use the installed Zlib libs instead of included
 #       sources
 #   PREFER_EXTERNAL_ZSTD: default OFF
-#       when found, use the installed zstd libs instead of included
+#       when found, use the installed Zstd libs instead of included
 #       sources
 #   TEST_INCLUDE_BENCH_SHUFFLE_1: default ON
 #       add a test that runs the benchmark program passing "shuffle" with 1
@@ -71,10 +73,9 @@
 
 
 cmake_minimum_required(VERSION 2.8.12)
-if (NOT CMAKE_VERSION VERSION_LESS 3.3)
+if(NOT CMAKE_VERSION VERSION_LESS 3.3)
     cmake_policy(SET CMP0063 NEW)
 endif()
-project(blosc C)
 
 # parse the full version numbers from blosc.h
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/blosc/blosc.h _blosc_h_contents)
@@ -89,6 +90,14 @@ string(REGEX REPLACE ".*#define[ \t]+BLOSC_VERSION_STRING[ \t]+\"([-0-9A-Za-z.]+
 
 message("Configuring for Blosc version: " ${BLOSC_VERSION_STRING})
 
+# The project can have ASM (zstd 1.5.2 is starting to use it)
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+    project(blosc LANGUAGES C ASM VERSION "${BLOSC_VERSION_MAJOR}.${BLOSC_VERSION_MINOR}.${BLOSC_VERSION_PATCH}")
+else()
+    project(blosc LANGUAGES C ASM)
+endif()
+
 # options
 option(BUILD_STATIC
     "Build a static version of the blosc library." ON)
@@ -98,6 +107,11 @@ option(BUILD_TESTS
     "Build test programs from the blosc compression library" ON)
 option(BUILD_FUZZERS
     "Build fuzzer programs from the blosc compression library" ${BUILD_STATIC})
+# Hide symbols by default unless they're specifically exported.
+# This makes it easier to keep the set of exported symbols the
+# same across all compilers/platforms.
+option(HIDE_SYMBOLS
+    "Build a libraries with hidden symbols unless they're specifically exported" ON)
 option(BUILD_BENCHMARKS
     "Build benchmark programs from the blosc compression library" ON)
 option(DEACTIVATE_SSE2
@@ -122,18 +136,18 @@ option(PREFER_EXTERNAL_ZSTD
     "Find and use external Zstd library instead of included sources." OFF)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
+include(GNUInstallDirs)
 
 if(NOT DEACTIVATE_LZ4)
     if(PREFER_EXTERNAL_LZ4)
         find_package(LZ4)
     else()
         message(STATUS "Using LZ4 internal sources.")
-    endif(PREFER_EXTERNAL_LZ4)
+    endif()
     # HAVE_LZ4 will be set to true because even if the library is
     # not found, we will use the included sources for it
     set(HAVE_LZ4 TRUE)
-endif(NOT DEACTIVATE_LZ4)
+endif()
 
 if(NOT DEACTIVATE_SNAPPY)
     find_package(Snappy)
@@ -143,37 +157,37 @@ if(NOT DEACTIVATE_SNAPPY)
     else()
         message(STATUS "SNAPPY *not* found.  De-activating support for it.")
     endif()
-endif(NOT DEACTIVATE_SNAPPY)
+endif()
 
 if(NOT DEACTIVATE_ZLIB)
     # import the ZLIB_ROOT environment variable to help finding the zlib library
     if(PREFER_EXTERNAL_ZLIB)
         set(ZLIB_ROOT $ENV{ZLIB_ROOT})
         find_package(ZLIB)
-        if (NOT ZLIB_FOUND )
+        if(NOT ZLIB_FOUND )
             message(STATUS "No zlib found.  Using internal sources.")
-        endif (NOT ZLIB_FOUND )
+        endif()
     else()
         message(STATUS "Using zlib internal sources.")
-    endif(PREFER_EXTERNAL_ZLIB)
+    endif()
     # HAVE_ZLIB will be set to true because even if the library is not found,
     # we will use the included sources for it
     set(HAVE_ZLIB TRUE)
-endif(NOT DEACTIVATE_ZLIB)
+endif()
 
-if (NOT DEACTIVATE_ZSTD)
-    if (PREFER_EXTERNAL_ZSTD)
+if(NOT DEACTIVATE_ZSTD)
+    if(PREFER_EXTERNAL_ZSTD)
         find_package(Zstd)
-    else ()
+    else()
         message(STATUS "Using ZSTD internal sources.")
-    endif (PREFER_EXTERNAL_ZSTD)
+    endif()
     # HAVE_ZSTD will be set to true because even if the library is
     # not found, we will use the included sources for it
     set(HAVE_ZSTD TRUE)
-endif (NOT DEACTIVATE_ZSTD)
+endif()
 
 # create the config.h file
-configure_file ("blosc/config.h.in"  "blosc/config.h" )
+configure_file("blosc/config.h.in"  "blosc/config.h" )
 
 # now make sure that you set the build directory on your "Include" path when compiling
 include_directories("${PROJECT_BINARY_DIR}/blosc/")
@@ -201,11 +215,7 @@ endif()
 # by this (the host) system, because we want to be able to support compiling
 # for newer hardware on older machines as well as cross-compilation.
 message(STATUS "Building for system processor ${CMAKE_SYSTEM_PROCESSOR}")
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL i386 OR
-   CMAKE_SYSTEM_PROCESSOR STREQUAL i686 OR
-   CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64 OR
-   CMAKE_SYSTEM_PROCESSOR STREQUAL amd64 OR
-   CMAKE_SYSTEM_PROCESSOR STREQUAL AMD64)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(i386|i686|x86_64|amd64|AMD64)")
     if(CMAKE_C_COMPILER_ID STREQUAL GNU)
         # We need C99 (GNU99 more exactly)
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
@@ -262,50 +272,50 @@ endif()
 # Set -Wall and other useful warning flags.
 if(CMAKE_C_COMPILER_ID STREQUAL GNU OR CMAKE_C_COMPILER_ID STREQUAL Clang OR CMAKE_C_COMPILER_ID STREQUAL Intel)
     add_compile_options(-Wall -Wwrite-strings -Wno-unused-function)
-endif(CMAKE_C_COMPILER_ID STREQUAL GNU OR CMAKE_C_COMPILER_ID STREQUAL Clang OR CMAKE_C_COMPILER_ID STREQUAL Intel)
+endif()
 
 # @NOTE: -O3 is enabled in Release mode (CMAKE_BUILD_TYPE="Release")
 
 # Set the "-msse2" build flag if supported.
 if(CMAKE_C_COMPILER_ID STREQUAL GNU OR CMAKE_C_COMPILER_ID STREQUAL Clang OR CMAKE_C_COMPILER_ID STREQUAL Intel)
-     if(COMPILER_SUPPORT_SSE2)
-         add_compile_options(-msse2)
-     endif(COMPILER_SUPPORT_SSE2)
-endif(CMAKE_C_COMPILER_ID STREQUAL GNU OR CMAKE_C_COMPILER_ID STREQUAL Clang OR CMAKE_C_COMPILER_ID STREQUAL Intel)
+    if(COMPILER_SUPPORT_SSE2)
+        add_compile_options(-msse2)
+    endif()
+endif()
 
 if(MSVC)
     if(NOT CMAKE_C_FLAGS)
         set(CMAKE_C_FLAGS "/Ox" CACHE STRING "C flags." FORCE)
-    endif(NOT CMAKE_C_FLAGS)
+    endif()
 
     # Turn off misguided "secure CRT" warnings in MSVC.
     # Microsoft wants people to use the MS-specific <function>_s
     # versions of certain C functions but this is difficult to do
     # in platform-independent code.
     add_definitions( -D_CRT_SECURE_NO_WARNINGS )
-endif(MSVC)
+endif()
 
 if(WIN32)
     # For some supporting headers
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/blosc")
-endif(WIN32)
+endif()
 
 if(HAIKU)
     # Haiku have posix_memalign, required by test_common.h
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=200112L")
-endif(HAIKU)
+endif()
 
-if (NOT DEFINED BLOSC_IS_SUBPROJECT)
-  if ("^${CMAKE_SOURCE_DIR}$" STREQUAL "^${PROJECT_SOURCE_DIR}$")
-    set (BLOSC_IS_SUBPROJECT FALSE)
-  else ()
-    set (BLOSC_IS_SUBPROJECT TRUE)
-    message(STATUS "Detected that BLOSC is used a subproject.")
-  endif ()
-endif ()
+if(NOT DEFINED BLOSC_IS_SUBPROJECT)
+    if("^${CMAKE_SOURCE_DIR}$" STREQUAL "^${PROJECT_SOURCE_DIR}$")
+        set(BLOSC_IS_SUBPROJECT FALSE)
+    else()
+        set(BLOSC_IS_SUBPROJECT TRUE)
+        message(STATUS "Detected that BLOSC is used a subproject.")
+    endif()
+endif()
 
-if (NOT DEFINED BLOSC_INSTALL)
-    if (BLOSC_IS_SUBPROJECT)
+if(NOT DEFINED BLOSC_INSTALL)
+    if(BLOSC_IS_SUBPROJECT)
         set(BLOSC_INSTALL FALSE)
     else()
         set(BLOSC_INSTALL TRUE)
@@ -320,7 +330,7 @@ if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
     add_subdirectory(compat)
-endif(BUILD_TESTS)
+endif()
 
 if(BUILD_FUZZERS)
     if(NOT BUILD_STATIC)
@@ -328,21 +338,21 @@ if(BUILD_FUZZERS)
     endif()
     enable_testing()
     add_subdirectory(tests/fuzz)
-endif(BUILD_FUZZERS)
+endif()
 
 if(BUILD_BENCHMARKS)
     add_subdirectory(bench)
-endif(BUILD_BENCHMARKS)
+endif()
 
 
 # uninstall target
-if (BLOSC_INSTALL)
+if(BLOSC_INSTALL)
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/blosc.pc.in"
         "${CMAKE_CURRENT_BINARY_DIR}/blosc.pc"
         @ONLY)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/blosc.pc"
-            DESTINATION lib/pkgconfig COMPONENT DEV)
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig" COMPONENT DEV)
 
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -353,7 +363,7 @@ if (BLOSC_INSTALL)
 endif()
 
 # packaging
-if (NOT BLOSC_IS_SUBPROJECT)
+if(NOT BLOSC_IS_SUBPROJECT)
     include(InstallRequiredSystemLibraries)
 
     set(CPACK_GENERATOR TGZ ZIP)
@@ -365,7 +375,7 @@ if (NOT BLOSC_IS_SUBPROJECT)
     set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
         "A blocking, shuffling and lossless compression library")
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSES/BLOSC.txt")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
     set(CPACK_SOURCE_IGNORE_FILES "/build.*;.*~;\\\\.git.*;\\\\.DS_Store")
     set(CPACK_STRIP_FILES TRUE)
     set(CPACK_SOURCE_STRIP_FILES TRUE)

@@ -1,7 +1,7 @@
 /*
-    Copyright (C) 2016  Francesc Alted
-    http://blosc.org
-    License: MIT (see LICENSE.txt)
+    Copyright (c) 2016  Francesc Alted
+    https://blosc.org
+    License: BSD 3-Clause (see LICENSE.txt)
 
     Test program trying to replicate the python-blosc issue:
 
@@ -54,7 +54,7 @@ int main(){
   printf("Blosc version info: %s (%s)\n",
 	 BLOSC_VERSION_STRING, BLOSC_VERSION_DATE);
 
-  /* Initialize the gobal Blosc context */
+  /* Initialize the global Blosc context */
   blosc_init();
 
   /* Use multithreading */
@@ -63,7 +63,7 @@ int main(){
   /* Compress with clevel=9 and shuffle active */
   csize = blosc_compress(9, 1, sizeof(double), isize, data, data_out, osize);
   if (csize == 0) {
-    printf("Buffer is uncompressible.  Giving up.\n");
+    printf("Buffer is incompressible.  Giving up.\n");
     return 1;
   }
   else if (csize < 0) {
