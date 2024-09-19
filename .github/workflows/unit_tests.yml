@@ -39,7 +39,7 @@ jobs:
       - name: Install bcolz
         run: |
           python -VV
-          find . -type f -name '*.c' | sed 's|.*\.||' | sort -u
+          find "$directory" -type f -name "*.c"
           python -m pip install --upgrade pip wheel setuptools
           pip install -e .[test] --verbose
         env:
