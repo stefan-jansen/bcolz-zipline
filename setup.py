@@ -108,9 +108,7 @@ CFLAGS.append('-std=gnu99')
 # in certain build environments, particularly when compiling against numpy 2.0
 # While this may slightly reduce Zstd compression/decompression performance,
 # it significantly improves build compatibility across different systems
-
-if platform.machine() in ['x86_64', 'AMD64']:
-    CFLAGS.append('-DZSTD_DISABLE_ASM')
+CFLAGS.append('-DZSTD_DISABLE_ASM')
 
 setup(
     ext_modules=[Extension(
