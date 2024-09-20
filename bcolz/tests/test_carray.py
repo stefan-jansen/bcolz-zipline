@@ -1288,7 +1288,7 @@ class fancy_indexing_getitemTest(TestCase):
 
     def test00(self):
         """Testing fancy indexing (short list)"""
-        a = np.arange(1, 111, dtype='int')
+        a = np.arange(1, 111)
         b = bcolz.carray(a)
         c = b[[3, 1]]
         r = a[[3, 1]]
@@ -1298,7 +1298,7 @@ class fancy_indexing_getitemTest(TestCase):
         """Testing fancy indexing (large list, numpy)"""
         a = np.arange(1, 1e4)
         b = bcolz.carray(a)
-        idx = np.random.randint(1000, size=1000)
+        idx = np.random.randint(1000, size=1000, dtype=np.int_)
         c = b[idx]
         r = a[idx]
         assert_array_equal(c, r, "fancy indexing does not work correctly")
@@ -1373,8 +1373,8 @@ class fancy_indexing_setitemTest(TestCase):
         """Testing fancy indexing with __setitem__ (large list)"""
         a = np.arange(0, 1000)
         b = bcolz.carray(a, chunklen=10)
-        sl = np.random.randint(0, 1000, size=3 * 30)
-        vals = np.random.randint(1, 1000, size=3 * 30)
+        sl = np.random.randint(0, 1000, size=3 * 30, dtype=np.int_)
+        vals = np.random.randint(1, 1000, size=3 * 30, dtype=np.int_)
         b[sl] = vals
         a[sl] = vals
         # print "b[%s] -> %r" % (sl, b)
