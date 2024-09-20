@@ -4,7 +4,7 @@
   Author: Francesc Alted <francesc@blosc.org>
   Creation date: 2009-05-20
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 
@@ -651,7 +651,7 @@ static int blosc_c(const struct blosc_context* context, int32_t blocksize,
     }
     if (context->compcode == BLOSC_BLOSCLZ) {
       cbytes = blosclz_compress(context->clevel, _tmp+j*neblock, neblock,
-                                dest, maxout);
+                                dest, maxout, !dont_split);
     }
     #if defined(HAVE_LZ4)
     else if (context->compcode == BLOSC_LZ4) {
@@ -732,7 +732,6 @@ static int blosc_d(struct blosc_context* context, int32_t blocksize,
   int32_t nbytes;                /* number of decompressed bytes in split */
   const int32_t compressedsize = context->compressedsize;
   int32_t cbytes;                /* number of compressed bytes in split */
-  int32_t ctbytes = 0;           /* number of compressed bytes in block */
   int32_t ntbytes = 0;           /* number of uncompressed bytes in block */
   uint8_t *_tmp = dest;
   int32_t typesize = context->typesize;
@@ -769,7 +768,6 @@ static int blosc_d(struct blosc_context* context, int32_t blocksize,
     if (cbytes < 0 || cbytes > context->compressedsize - src_offset) {
       return -1;
     }
-    ctbytes += (int32_t)sizeof(int32_t);
     src = base_src + src_offset;
     /* Uncompress */
     if (cbytes == neblock) {
@@ -784,7 +782,6 @@ static int blosc_d(struct blosc_context* context, int32_t blocksize,
       }
     }
     src_offset += cbytes;
-    ctbytes += cbytes;
     _tmp += nbytes;
     ntbytes += nbytes;
   } /* Closes j < nsplits */
@@ -837,7 +834,7 @@ static int serial_blosc(struct blosc_context* context)
                          context->destsize, context->src+j*context->blocksize,
                          context->dest+ntbytes, tmp, tmp2);
         if (cbytes == 0) {
-          ntbytes = 0;              /* uncompressible data */
+          ntbytes = 0;              /* incompressible data */
           break;
         }
       }
@@ -1836,7 +1833,7 @@ static void *t_blosc(void *ctxt)
         ntdest = context->parent_context->num_output_bytes;
         _sw32(bstarts + nblock_ * 4, ntdest); /* update block start counter */
         if ( (cbytes == 0) || (ntdest+cbytes > maxbytes) ) {
-          context->parent_context->thread_giveup_code = 0;  /* uncompressible buffer */
+          context->parent_context->thread_giveup_code = 0;  /* incompressible buffer */
           pthread_mutex_unlock(&context->parent_context->count_mutex);
           break;
         }
@@ -2195,7 +2192,7 @@ void blosc_set_splitmode(int mode)
  * trigger re-init of the global context.
  *
  * All pthread interfaces have undefined behavior in child handler in current
- * posix standards: http://pubs.opengroup.org/onlinepubs/9699919799/
+ * posix standards: https://pubs.opengroup.org/onlinepubs/9699919799/
  */
 void blosc_atfork_child(void) {
   if (!g_initlib) return;

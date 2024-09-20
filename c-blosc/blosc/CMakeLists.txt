@@ -3,10 +3,9 @@ add_definitions(-DUSING_CMAKE)
 
 set(INTERNAL_LIBS ${PROJECT_SOURCE_DIR}/internal-complibs)
 
-# Hide symbols by default unless they're specifically exported.
-# This makes it easier to keep the set of exported symbols the
-# same across all compilers/platforms.
-set(CMAKE_C_VISIBILITY_PRESET hidden)
+if(HIDE_SYMBOLS)
+  set(CMAKE_C_VISIBILITY_PRESET hidden)
+endif(HIDE_SYMBOLS)
 
 # includes
 set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -14,7 +13,7 @@ if(NOT DEACTIVATE_LZ4)
     if (LZ4_FOUND)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${LZ4_INCLUDE_DIR})
     else(LZ4_FOUND)
-        set(LZ4_LOCAL_DIR ${INTERNAL_LIBS}/lz4-1.9.3)
+        set(LZ4_LOCAL_DIR ${INTERNAL_LIBS}/lz4-1.9.4)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${LZ4_LOCAL_DIR})
     endif(LZ4_FOUND)
 endif(NOT DEACTIVATE_LZ4)
@@ -32,7 +31,7 @@ if(NOT DEACTIVATE_ZLIB)
     if (ZLIB_FOUND)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIR})
     else(ZLIB_FOUND)
-        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/zlib-1.2.8)
+        set(ZLIB_LOCAL_DIR ${INTERNAL_LIBS}/zlib-1.3.1)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZLIB_LOCAL_DIR})
     endif(ZLIB_FOUND)
 endif(NOT DEACTIVATE_ZLIB)
@@ -41,7 +40,7 @@ if (NOT DEACTIVATE_ZSTD)
     if (ZSTD_FOUND)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR})
     else (ZSTD_FOUND)
-        set(ZSTD_LOCAL_DIR ${INTERNAL_LIBS}/zstd-1.4.8)
+        set(ZSTD_LOCAL_DIR ${INTERNAL_LIBS}/zstd-1.5.6)
         set(BLOSC_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS} ${ZSTD_LOCAL_DIR} ${ZSTD_LOCAL_DIR}/common)
     endif (ZSTD_FOUND)
 endif (NOT DEACTIVATE_ZSTD)
@@ -61,11 +60,10 @@ if(COMPILER_SUPPORT_AVX2)
 endif(COMPILER_SUPPORT_AVX2)
 set(SOURCES ${SOURCES} shuffle.c)
 
-# library install directory
-set(lib_dir lib${LIB_SUFFIX})
 set(version_string ${BLOSC_VERSION_MAJOR}.${BLOSC_VERSION_MINOR}.${BLOSC_VERSION_PATCH})
 
-set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE) # pre 3.1
+set(THREADS_PREFER_PTHREAD_FLAG TRUE) # CMake 3.1+
 if(WIN32)
     # try to use the system library
     find_package(Threads)
@@ -73,11 +71,19 @@ if(WIN32)
         message(STATUS "using the internal pthread library for win32 systems.")
         set(SOURCES ${SOURCES} win32/pthread.c)
     else(NOT Threads_FOUND)
-        set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
+        if(CMAKE_VERSION VERSION_LESS 3.1)
+            set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
+        else()
+            set(LIBS ${LIBS} Threads::Threads)
+        endif()
     endif(NOT Threads_FOUND)
 else(WIN32)
     find_package(Threads REQUIRED)
-    set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
+    if(CMAKE_VERSION VERSION_LESS 3.1)
+        set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT})
+    else()
+        set(LIBS ${LIBS} Threads::Threads)
+    endif()
 endif(WIN32)
 
 if(NOT DEACTIVATE_LZ4)
@@ -114,10 +120,21 @@ if (NOT DEACTIVATE_ZSTD)
     if (ZSTD_FOUND)
         set(LIBS ${LIBS} ${ZSTD_LIBRARY})
     else (ZSTD_FOUND)
-      file(GLOB ZSTD_FILES
-        ${ZSTD_LOCAL_DIR}/common/*.c
-        ${ZSTD_LOCAL_DIR}/compress/*.c
-        ${ZSTD_LOCAL_DIR}/decompress/*.c)
+        # Enable assembly code only when not using MSVC *and* x86 is there
+        if((NOT MSVC) AND COMPILER_SUPPORT_SSE2)   # if SSE2 is here, this is an x86 platform
+            message(STATUS "Adding support for assembly sources in ZSTD")
+            file(GLOB ZSTD_DECOMPRESS_FILES ${ZSTD_LOCAL_DIR}/decompress/*.S)
+        else()
+            message(STATUS "Disabling support for assembly sources in ZSTD")
+            add_compile_definitions("ZSTD_DISABLE_ASM")
+        endif()
+        file(GLOB ZSTD_DECOMPRESS_FILES ${ZSTD_DECOMPRESS_FILES}
+                ${ZSTD_LOCAL_DIR}/decompress/*.c)
+        file(GLOB ZSTD_COMMON_FILES ${ZSTD_LOCAL_DIR}/common/*.c)
+        file(GLOB ZSTD_COMPRESS_FILES ${ZSTD_LOCAL_DIR}/compress/*.c)
+        file(GLOB ZSTD_DICT_FILES ${ZSTD_LOCAL_DIR}/dictBuilder/*.c)
+        set(ZSTD_FILES ${ZSTD_COMMON_FILES} ${ZSTD_COMPRESS_FILES}
+            ${ZSTD_DECOMPRESS_FILES} ${ZSTD_DICT_FILES})
         set(SOURCES ${SOURCES} ${ZSTD_FILES})
         source_group("Zstd" FILES ${ZSTD_FILES})
     endif (ZSTD_FOUND)
@@ -186,13 +203,6 @@ if (BUILD_TESTS)
     set_property(
         TARGET blosc_shared_testing
         APPEND PROPERTY COMPILE_DEFINITIONS BLOSC_TESTING)
-    # TEMP : CMake doesn't automatically add -lpthread here like it does
-    # for the blosc_shared target. Force it for now.
-    if(UNIX)
-        set_property(
-            TARGET blosc_shared_testing
-            APPEND PROPERTY LINK_FLAGS "-lpthread")
-    endif()
 endif()
 
 if (BUILD_SHARED)
@@ -217,11 +227,15 @@ endif(BUILD_STATIC)
 
 # install
 if(BLOSC_INSTALL)
-    install(FILES blosc.h blosc-export.h DESTINATION include COMPONENT DEV)
+    install(FILES blosc.h blosc-export.h
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT DEV)
     if(BUILD_SHARED)
-        install(TARGETS blosc_shared LIBRARY DESTINATION ${lib_dir} ARCHIVE DESTINATION ${lib_dir} RUNTIME DESTINATION bin COMPONENT LIB)
+        install(TARGETS blosc_shared
+                LIBRARY COMPONENT LIB
+                ARCHIVE COMPONENT DEV
+                RUNTIME COMPONENT LIB)
     endif(BUILD_SHARED)
     if(BUILD_STATIC)
-        install(TARGETS blosc_static LIBRARY DESTINATION ${lib_dir} ARCHIVE DESTINATION ${lib_dir} RUNTIME DESTINATION bin COMPONENT DEV)
+        install(TARGETS blosc_static COMPONENT DEV)
     endif(BUILD_STATIC)
 endif(BLOSC_INSTALL)
