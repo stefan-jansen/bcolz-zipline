@@ -19,11 +19,18 @@ import sys
 from pkg_resources import parse_version
 
 import numpy
-from numpy._core import numerictypes as _nt
 from numpy import maximum, minimum, absolute, not_equal, isnan, isinf
-from numpy._core.multiarray import format_longfloat
-from numpy._core.fromnumeric import ravel
 from .py2help import xrange
+
+# Workaround using Numy's internal API for compatibilty with both numpy<2 and numpy>=2.
+try:
+    from numpy.core import numerictypes as _nt
+    from numpy.core.multiarray import format_longfloat
+    from numpy.core.fromnumeric import ravel
+except ImportError:
+    from numpy._core import numerictypes as _nt
+    from numpy._core.multiarray import format_longfloat
+    from numpy._core.fromnumeric import ravel
 
 
 try:
