@@ -25,10 +25,12 @@ from .py2help import xrange
 # Workaround using Numy's internal API for compatibilty with both numpy<2 and numpy>=2.
 try:
     from numpy.core import numerictypes as _nt
+    import numpy.core.numeric as _nc
     from numpy.core.multiarray import format_longfloat
     from numpy.core.fromnumeric import ravel
 except ImportError:
     from numpy._core import numerictypes as _nt
+    import numpy._core.numeric as _nc
     from numpy._core.multiarray import format_longfloat
     from numpy._core.fromnumeric import ravel
 
@@ -576,8 +578,6 @@ class FloatFormat(object):
             pass
 
     def fillFormat(self, data):
-        import numpy._core.numeric as _nc
-
         errstate = _nc.seterr(all='ignore')
         try:
             special = isnan(data) | isinf(data)
