@@ -135,7 +135,7 @@ Install it as a typical Python package:
 
 Optionally Install the additional dependencies:
 
-    $ pip install .[optional]pip 
+    $ pip install .[optional]
 
 ## Documentation
 
