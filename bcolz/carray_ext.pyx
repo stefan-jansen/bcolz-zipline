@@ -1993,7 +1993,7 @@ cdef class carray:
                     count = -1
                 return np.fromiter(self.where(key), dtype=self._dtype,
                                    count=count)
-            elif np.issubsctype(key, np.int_):
+            elif np.issubdtype(key.dtype, np.int_):
                 # An integer array
                 return np.array([self[i] for i in key], dtype=self._dtype.base)
             else:
@@ -2148,7 +2148,7 @@ cdef class carray:
                         "boolean array length must match len(self)")
                 self.bool_update(key, value)
                 return
-            elif np.issubsctype(key, np.int_):
+            elif np.issubdtype(key.dtype, np.int_):
                 # An integer array
                 value = utils.to_ndarray(value, self._dtype, arrlen=len(key),
                         safe=self._safe)

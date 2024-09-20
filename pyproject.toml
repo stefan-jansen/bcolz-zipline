@@ -1,7 +1,7 @@
 [project]
 name = "bcolz-zipline"
 dynamic = ["version"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "numpy >=1.16"
 ]
@@ -14,8 +14,8 @@ authors = [
     { email = "francesc@blosc.org" }
 ]
 maintainers = [
-    { name = "Francesc Alted" },
-    { email = "francesc@blosc.org" }
+    { name = "Stefan Jansen" },
+    { email = "stefan@applied-ai.com" }
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -46,8 +46,9 @@ requires = [
     "wheel",
     "Cython>=0.22",
     "toml",
+    "numpy",
     # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-    "oldest-supported-numpy"
+#    "oldest-supported-numpy"
 ]
 
 build-backend = "setuptools.build_meta"
@@ -82,6 +83,9 @@ build-verbosity = 3
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64", "universal2"]
 test-skip = ["*universal2:arm64"]
+
+[tool.ruff.lint]
+select = ["NPY201"]
 
 [tools.pytest]
 testpaths = "bcolz/tests"

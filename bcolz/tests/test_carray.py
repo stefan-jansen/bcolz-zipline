@@ -111,7 +111,6 @@ class chunkTest(TestCase):
 
 
 class pickleTest(MayBeDiskTest):
-
     disk = False
 
     def generate_data(self):
@@ -168,7 +167,7 @@ class getitemTest(MayBeDiskTest):
         """Testing `__getitem()__` method with only a (large) start"""
         a = np.arange(1e4)
         b = bcolz.carray(a, rootdir=self.rootdir)
-        sl = -2   # second last element
+        sl = -2  # second last element
         # print "b[sl]->", `b[sl]`
         assert_array_equal(a[sl], b[sl], "Arrays are not equal")
 
@@ -296,10 +295,10 @@ class getitemTest(MayBeDiskTest):
         """Testing `__getitem()__` with chunks not multiple of blocksize."""
         a = np.arange(1e5)
         b = bcolz.carray(a, chunklen=10000, rootdir=self.rootdir)
-        sl = -2   # second last element
+        sl = -2  # second last element
         # print "b[sl]->", `b[sl]`
         assert_array_equal(a[sl], b[sl], "Arrays are not equal")
-        sl = -1   # last element
+        sl = -1  # last element
         # print "b[sl]->", `b[sl]`
         assert_array_equal(a[sl], b[sl], "Arrays are not equal")
 
@@ -362,8 +361,8 @@ class setitemTest(MayBeDiskTest):
     def test03b(self):
         """Testing `__setitem()__` method with the complete range (large)"""
         a = np.arange(1e6)
-        b = bcolz.carray(a, chunklen=1000-1)
-        c = bcolz.carray(a, chunklen=1000-2, rootdir=self.rootdir)
+        b = bcolz.carray(a, chunklen=1000 - 1)
+        c = bcolz.carray(a, chunklen=1000 - 2, rootdir=self.rootdir)
         c[:] = b[:]
         # print "b->", `b`
         # print "c->", `c`
@@ -448,7 +447,7 @@ class appendTest(MayBeDiskTest):
     def test02a(self):
         """Testing `append()` method (large chunklen I)"""
         a = np.arange(1000)
-        b = bcolz.carray(a, chunklen=10*1000, rootdir=self.rootdir)
+        b = bcolz.carray(a, chunklen=10 * 1000, rootdir=self.rootdir)
         b.append(a)
         # print "b->", `b`
         c = np.concatenate((a, a))
@@ -456,8 +455,8 @@ class appendTest(MayBeDiskTest):
 
     def test02b(self):
         """Testing `append()` method (large chunklen II)"""
-        a = np.arange(100*1000)
-        b = bcolz.carray(a, chunklen=10*1000, rootdir=self.rootdir)
+        a = np.arange(100 * 1000)
+        b = bcolz.carray(a, chunklen=10 * 1000, rootdir=self.rootdir)
         b.append(a)
         # print "b->", `b`
         c = np.concatenate((a, a))
@@ -465,8 +464,8 @@ class appendTest(MayBeDiskTest):
 
     def test02c(self):
         """Testing `append()` method (large chunklen III)"""
-        a = np.arange(1000*1000)
-        b = bcolz.carray(a, chunklen=100*1000-1, rootdir=self.rootdir)
+        a = np.arange(1000 * 1000)
+        b = bcolz.carray(a, chunklen=100 * 1000 - 1, rootdir=self.rootdir)
         b.append(a)
         # print "b->", `b`
         c = np.concatenate((a, a))
@@ -497,7 +496,7 @@ class trimTest(MayBeDiskTest):
         """Testing `trim()` method"""
         b = bcolz.arange(1e3, rootdir=self.rootdir)
         b.trim(3)
-        a = np.arange(1e3-3)
+        a = np.arange(1e3 - 3)
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
 
@@ -505,7 +504,7 @@ class trimTest(MayBeDiskTest):
         """Testing `trim()` method (small chunklen)"""
         b = bcolz.arange(1e2, chunklen=2, rootdir=self.rootdir)
         b.trim(5)
-        a = np.arange(1e2-5)
+        a = np.arange(1e2 - 5)
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
 
@@ -513,7 +512,7 @@ class trimTest(MayBeDiskTest):
         """Testing `trim()` method (large trim)"""
         a = np.arange(2)
         b = bcolz.arange(1e4, rootdir=self.rootdir)
-        b.trim(1e4-2)
+        b.trim(1e4 - 2)
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
 
@@ -530,7 +529,7 @@ class trimTest(MayBeDiskTest):
         a = np.arange(0.)
         b = bcolz.arange(1e4, rootdir=self.rootdir)
         # print "b->", `b`
-        self.assertRaises(ValueError, b.trim, 1e4+1)
+        self.assertRaises(ValueError, b.trim, 1e4 + 1)
 
     def test05(self):
         """Testing `trim()` method (trimming zero items)"""
@@ -563,16 +562,16 @@ class resizeTest(MayBeDiskTest):
     def test00a(self):
         """Testing `resize()` method (decrease)"""
         b = bcolz.arange(self.N, rootdir=self.rootdir)
-        b.resize(self.N-3)
-        a = np.arange(self.N-3)
+        b.resize(self.N - 3)
+        a = np.arange(self.N - 3)
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
 
     def test00b(self):
         """Testing `resize()` method (increase)"""
         b = bcolz.arange(self.N, rootdir=self.rootdir)
-        b.resize(self.N+3)
-        a = np.arange(self.N+3)
+        b.resize(self.N + 3)
+        a = np.arange(self.N + 3)
         a[self.N:] = 0
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
@@ -588,8 +587,8 @@ class resizeTest(MayBeDiskTest):
     def test01b(self):
         """Testing `resize()` method (increase, large variation)"""
         b = bcolz.arange(self.N, dflt=1, rootdir=self.rootdir)
-        b.resize(self.N*3)
-        a = np.arange(self.N*3)
+        b.resize(self.N * 3)
+        a = np.arange(self.N * 3)
         a[self.N:] = 1
         # print "b->", `b`
         assert_array_equal(a, b[:], "Arrays are not equal")
@@ -657,7 +656,6 @@ class miscDiskTest(miscTest, TestCase):
 
 
 class copyTest(MayBeDiskTest):
-
     N = int(1e5)
 
     def tearDown(self):
@@ -709,7 +707,7 @@ class copyTest(MayBeDiskTest):
         b = bcolz.carray(a, rootdir=self.rootdir)
         bcolz.cparams.setdefaults(shuffle=bcolz.NOSHUFFLE)
         c = b.copy()
-        #print "b.cbytes, c.cbytes:", b.cbytes, c.cbytes
+        # print "b.cbytes, c.cbytes:", b.cbytes, c.cbytes
         self.assertTrue(b.cbytes < c.cbytes, "shuffle not changed")
 
 
@@ -877,7 +875,7 @@ class iterTest(MayBeDiskTest):
         a = np.arange(1e4, dtype='f8')
         b = bcolz.carray(a, chunklen=100, rootdir=self.rootdir)
         c = bcolz.fromiter((v for v in b.iter(skip=1010)), dtype='f8',
-                           count=10000-1010)
+                           count=10000 - 1010)
         # print "c ->", repr(c)
         assert_allclose(a[1010:], c, err_msg="iterator fails on zeros")
 
@@ -995,11 +993,11 @@ class iterblocksTest(MayBeDiskTest):
         a = bcolz.fromiter(xrange(N), dtype=np.float64, count=N,
                            rootdir=self.rootdir)
         l, s = 0, 0
-        for block in bcolz.iterblocks(a, blen, blen-1):
+        for block in bcolz.iterblocks(a, blen, blen - 1):
             l += len(block)
             s += block.sum()
         self.assertEqual(l, (N - (blen - 1)))
-        self.assertEqual(s, np.arange(blen-1, N).sum())
+        self.assertEqual(s, np.arange(blen - 1, N).sum())
 
     def test03(self):
         """Testing `iterblocks` method with all parameters set"""
@@ -1007,13 +1005,13 @@ class iterblocksTest(MayBeDiskTest):
         a = bcolz.fromiter(xrange(N), dtype=np.float64, count=N,
                            rootdir=self.rootdir)
         l, s = 0, 0
-        for block in bcolz.iterblocks(a, blen, blen-1, 3*blen+2):
+        for block in bcolz.iterblocks(a, blen, blen - 1, 3 * blen + 2):
             l += len(block)
             s += block.sum()
-        mlen = min(N - (blen - 1), 2*blen + 3)
+        mlen = min(N - (blen - 1), 2 * blen + 3)
         self.assertEqual(l, mlen)
-        slen = min(N, 3*blen + 2)
-        self.assertEqual(s, np.arange(blen-1, slen).sum())
+        slen = min(N, 3 * blen + 2)
+        self.assertEqual(s, np.arange(blen - 1, slen).sum())
 
 
 class small_iterblocksMemoryTest(iterblocksTest, TestCase):
@@ -1244,7 +1242,7 @@ class whereTest(TestCase):
     def test07(self):
         """Testing `where()` iterator using `limit` and `skip` (zeros)"""
         a = np.arange(10000)
-        b = bcolz.carray(a,)
+        b = bcolz.carray(a, )
         wt = [v for v in a if v <= 5000][1010:2020]
         cwt = [v for v in b.where(bcolz.carray(a <= 5000, chunklen=100),
                                   limit=1010, skip=1010)]
@@ -1300,7 +1298,7 @@ class fancy_indexing_getitemTest(TestCase):
         """Testing fancy indexing (large list, numpy)"""
         a = np.arange(1, 1e4)
         b = bcolz.carray(a)
-        idx = np.random.randint(1000, size=1000)
+        idx = np.random.randint(1000, size=1000, dtype=np.int_)
         c = b[idx]
         r = a[idx]
         assert_array_equal(c, r, "fancy indexing does not work correctly")
@@ -1375,8 +1373,8 @@ class fancy_indexing_setitemTest(TestCase):
         """Testing fancy indexing with __setitem__ (large list)"""
         a = np.arange(0, 1000)
         b = bcolz.carray(a, chunklen=10)
-        sl = np.random.randint(0, 1000, size=3*30)
-        vals = np.random.randint(1, 1000, size=3*30)
+        sl = np.random.randint(0, 1000, size=3 * 30, dtype=np.int_)
+        vals = np.random.randint(1, 1000, size=3 * 30, dtype=np.int_)
         b[sl] = vals
         a[sl] = vals
         # print "b[%s] -> %r" % (sl, b)
@@ -1452,21 +1450,20 @@ class fromiterTest(TestCase):
 
     def test04a(self):
         """Testing fromiter method with large iterator"""
-        N = 10*1000
-        a = np.fromiter((i*2 for i in xrange(N)), dtype='f8')
-        b = bcolz.fromiter((i*2 for i in xrange(N)), dtype='f8', count=len(a))
+        N = 10 * 1000
+        a = np.fromiter((i * 2 for i in xrange(N)), dtype='f8')
+        b = bcolz.fromiter((i * 2 for i in xrange(N)), dtype='f8', count=len(a))
         assert_array_equal(b[:], a, "iterator with a hint fails")
 
     def test04b(self):
         """Testing fromiter method with large iterator with a hint"""
-        N = 10*1000
-        a = np.fromiter((i*2 for i in xrange(N)), dtype='f8', count=N)
-        b = bcolz.fromiter((i*2 for i in xrange(N)), dtype='f8', count=N)
+        N = 10 * 1000
+        a = np.fromiter((i * 2 for i in xrange(N)), dtype='f8', count=N)
+        b = bcolz.fromiter((i * 2 for i in xrange(N)), dtype='f8', count=N)
         assert_array_equal(b[:], a, "iterator with a hint fails")
 
 
 class evalTest(MayBeDiskTest):
-
     vm = "python"
 
     def setUp(self):
@@ -1490,9 +1487,9 @@ class evalTest(MayBeDiskTest):
 
     def test01(self):
         """Testing eval() with only carrays"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         if self.rootdir:
-            dirc, dird = self.rootdir+'.c', self.rootdir+'.d'
+            dirc, dird = self.rootdir + '.c', self.rootdir + '.d'
         else:
             dirc, dird = None, None
         c = bcolz.carray(a, rootdir=dirc)
@@ -1505,7 +1502,7 @@ class evalTest(MayBeDiskTest):
 
     def test02(self):
         """Testing eval() with only ndarrays"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         cr = bcolz.eval("a * b", rootdir=self.rootdir)
         nr = a * b
         # print "bcolz.eval ->", cr
@@ -1514,9 +1511,9 @@ class evalTest(MayBeDiskTest):
 
     def test03(self):
         """Testing eval() with a mix of carrays and ndarrays"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         if self.rootdir:
-            dirc, dird = self.rootdir+'.c', self.rootdir+'.d'
+            dirc, dird = self.rootdir + '.c', self.rootdir + '.d'
         else:
             dirc, dird = None, None
         c = bcolz.carray(a, rootdir=dirc)
@@ -1529,9 +1526,9 @@ class evalTest(MayBeDiskTest):
 
     def test04(self):
         """Testing eval() with a mix of carray, ndarray and scalars"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         if self.rootdir:
-            dirc, dird = self.rootdir+'.c', self.rootdir+'.d'
+            dirc, dird = self.rootdir + '.c', self.rootdir + '.d'
         else:
             dirc, dird = None, None
         c = bcolz.carray(a, rootdir=dirc)
@@ -1544,7 +1541,7 @@ class evalTest(MayBeDiskTest):
 
     def test05(self):
         """Testing eval() with a mix of carray, ndarray and scalars"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), b
         cr = bcolz.eval("a + 2 * d - 3")
         nr = a + 2 * b - 3
@@ -1554,7 +1551,7 @@ class evalTest(MayBeDiskTest):
 
     def test06(self):
         """Testing eval() with only scalars and arrays"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), b
         cr = bcolz.eval("d - 3")
         nr = b - 3
@@ -1564,7 +1561,7 @@ class evalTest(MayBeDiskTest):
 
     def test07(self):
         """Testing eval() via expression on __getitem__"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), b
         cr = c["a + 2 * d - 3 > 0"]
         nr = a[(a + 2 * b - 3) > 0]
@@ -1575,14 +1572,14 @@ class evalTest(MayBeDiskTest):
     def test08(self):
         """Testing eval() via expression with lists (raise ValueError)"""
         a, b = range(int(self.N)), range(int(self.N))
-        self.assertRaises(ValueError, bcolz.eval, "a*3", user_dict={'a':a,'b':b},
+        self.assertRaises(ValueError, bcolz.eval, "a*3", user_dict={'a': a, 'b': b},
                           rootdir=self.rootdir)
-        self.assertRaises(ValueError, bcolz.eval, "b*3", user_dict={'a':a,'b':b},
+        self.assertRaises(ValueError, bcolz.eval, "b*3", user_dict={'a': a, 'b': b},
                           rootdir=self.rootdir)
 
     def test09(self):
         """Testing eval() via expression on __setitem__ (I)"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), b
         c["a + 2 * d - 3 > 0"] = 3
         a[(a + 2 * b - 3) > 0] = 3
@@ -1592,7 +1589,7 @@ class evalTest(MayBeDiskTest):
 
     def test10(self):
         """Testing eval() via expression on __setitem__ (II)"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), b
         c["a + 2 * d - 3 > 1000"] = 0
         a[(a + 2 * b - 3) > 1000] = 0
@@ -1602,7 +1599,7 @@ class evalTest(MayBeDiskTest):
 
     def test11(self):
         """Testing eval() with functions like `np.sin()`"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a, rootdir=self.rootdir), bcolz.carray(b)
         if self.vm == "python":
             cr = bcolz.eval("np.sin(c) + 2 * np.log(d) - 3")
@@ -1617,7 +1614,7 @@ class evalTest(MayBeDiskTest):
 
     def test12(self):
         """Testing eval() with `out_flavor` == 'numpy'"""
-        a, b = np.arange(self.N), np.arange(1, self.N+1)
+        a, b = np.arange(self.N), np.arange(1, self.N + 1)
         c, d = bcolz.carray(a), bcolz.carray(b, rootdir=self.rootdir)
         cr = bcolz.eval("c + 2 * d - 3", out_flavor='numpy')
         nr = a + 2 * b - 3
@@ -1632,6 +1629,7 @@ class evalTest(MayBeDiskTest):
         b = bcolz.zeros(a.shape)
         b = bcolz.eval('a + b')
         self.assertEqual(b.sum(), self.N)
+
 
 class evalSmall(evalTest, TestCase):
     N = 10
@@ -1681,6 +1679,7 @@ class evalDiskBigNE(evalTest, TestCase):
 class evalVeryBigNE(evalTest, TestCase):
     N = int(1e7)
     vm = "numexpr"
+
 
 @skipUnless(bcolz.dask_here, 'Needs dask')
 class evalSmallDSK(evalTest, TestCase):
@@ -1858,7 +1857,7 @@ class constructorTest(MayBeDiskTest):
 
     def test03b(self):
         """Testing fill() constructor, with a `dtype`."""
-        a = np.ones(self.N, dtype='i4')*3
+        a = np.ones(self.N, dtype='i4') * 3
         ac = bcolz.fill(self.N, 3, dtype='i4', rootdir=self.rootdir)
         self.assertTrue(a.dtype == ac.dtype)
         self.assertTrue(np.all(a == ac[:]))
@@ -2065,8 +2064,8 @@ class persistenceTest(MayBeDiskTest, TestCase):
         cn = bcolz.zeros(N, dtype="i1", rootdir=self.rootdir)
         self.assertTrue(len(cn) == N)
 
-        cn = bcolz.zeros(N-2, dtype="i1", rootdir=self.rootdir, mode='w')
-        self.assertTrue(len(cn) == N-2)
+        cn = bcolz.zeros(N - 2, dtype="i1", rootdir=self.rootdir, mode='w')
+        self.assertTrue(len(cn) == N - 2)
 
         # Now check some accesses (no errors should be raised)
         cn.append([1, 1])
@@ -2082,7 +2081,7 @@ class persistenceTest(MayBeDiskTest, TestCase):
         self.assertTrue(len(cn) == N)
 
         self.assertRaises(IOError, bcolz.zeros,
-                          N-2, dtype="i1", rootdir=self.rootdir, mode='a')
+                          N - 2, dtype="i1", rootdir=self.rootdir, mode='a')
 
     def test02a(self):
         """Opening a carray in "r" mode."""
@@ -2117,7 +2116,7 @@ class persistenceTest(MayBeDiskTest, TestCase):
     def test02c(self):
         """Opening a carray in "a" mode."""
 
-        N = 1000-1
+        N = 1000 - 1
         cn = bcolz.zeros(N, dtype="i1", rootdir=self.rootdir)
         self.assertTrue(len(cn) == N)
 
@@ -2126,11 +2125,11 @@ class persistenceTest(MayBeDiskTest, TestCase):
 
         # Now check some accesses (no errors should be raised)
         cn.append([1, 1])
-        self.assertTrue(len(cn) == N+2)
+        self.assertTrue(len(cn) == N + 2)
         cn[1] = 2
         self.assertTrue(cn[1] == 2)
-        cn[N+1] = 3
-        self.assertTrue(cn[N+1] == 3)
+        cn[N + 1] = 3
+        self.assertTrue(cn[N + 1] == 3)
 
 
 class bloscCompressorsTest(MayBeDiskTest, TestCase):
@@ -2219,7 +2218,7 @@ class bloscCompressorsTest(MayBeDiskTest, TestCase):
     def test02a(self):
         """Testing quantize filter on big arrays (float64)"""
         np.random.seed(10)
-        a = np.cumsum(np.random.random_sample(100*1000)-0.5)    # random walk
+        a = np.cumsum(np.random.random_sample(100 * 1000) - 0.5)  # random walk
         if common.verbose:
             print("Checking quantize filter")
         # print "\nsize b uncompressed-->", a.size * a.dtype.itemsize
@@ -2244,7 +2243,7 @@ class bloscCompressorsTest(MayBeDiskTest, TestCase):
 
     def test02b(self):
         """Testing quantize filter on int arrays"""
-        a = np.arange(100*1000)
+        a = np.arange(100 * 1000)
         if common.verbose:
             print("Checking quantize filter on ints")
         cparams = bcolz.cparams(quantize=3)
@@ -2253,6 +2252,7 @@ class bloscCompressorsTest(MayBeDiskTest, TestCase):
         # Remove the array on disk before trying with the next one
         if self.disk:
             common.remove_tree(self.rootdir)
+
 
 class compressorsMemoryTest(bloscCompressorsTest, TestCase):
     disk = False
@@ -2312,13 +2312,13 @@ class bloscFiltersTest(MayBeDiskTest, TestCase):
         filters = bcolz.filters.keys()
         if common.verbose:
             print("Checking filters:", filters)
-        #print("\nsize b uncompressed-->", a.size * a.dtype.itemsize)
+        # print("\nsize b uncompressed-->", a.size * a.dtype.itemsize)
         for filter_ in filters:
             bcolz.defaults.cparams = {
                 'clevel': 9, 'shuffle': filter_, 'cname': "blosclz",
                 'quantize': 0}
             b = bcolz.carray(a, rootdir=self.rootdir)
-            #print("size b compressed  -->", b.cbytes, "with '%s'" % filter_)
+            # print("size b compressed  -->", b.cbytes, "with '%s'" % filter_)
             if filter_ > 0:
                 self.assertTrue(sys.getsizeof(b) < b.nbytes,
                                 "carray does not seem to compress at all")
@@ -2378,6 +2378,7 @@ class reprTest(TestCase):
         for el in x:
             self.assertTrue(el in result)
 
+
 class PurgeDiskArrayTest(MayBeDiskTest, TestCase):
     disk = True
 
@@ -2392,6 +2393,7 @@ class PurgeDiskArrayTest(MayBeDiskTest, TestCase):
         # OSError is fairly un-specific, but better than nothing
         self.assertRaises(OSError, b.purge)
 
+
 class PurgeMemoryArrayTest(MayBeDiskTest, TestCase):
     disk = False
 
@@ -2400,7 +2402,8 @@ class PurgeMemoryArrayTest(MayBeDiskTest, TestCase):
         # this should work and should be a noop
         b.purge()
 
-class reprDiskTest(MayBeDiskTest,TestCase):
+
+class reprDiskTest(MayBeDiskTest, TestCase):
     disk = True
 
     def _create_expected(self, mode):
@@ -2414,7 +2417,6 @@ class reprDiskTest(MayBeDiskTest,TestCase):
                    []
                    """ % (self.rootdir, mode)).strip()
         return expected
-
 
     def test_repr_disk_array_write(self):
         x = carray([], rootdir=self.rootdir, mode='w')
@@ -2459,11 +2461,11 @@ class chunksIterMemoryTest(chunksIterTest, TestCase):
 class chunksIterDiskTest(chunksIterTest, TestCase):
     disk = True
 
+
 class ContextManagerTest(MayBeDiskTest, TestCase):
     disk = True
 
     def test_with_statement_flushes(self):
-
         with carray([], rootdir=self.rootdir, mode='w') as x:
             x.append(1)
         received = np.array(carray(rootdir=self.rootdir))
@@ -2593,7 +2595,7 @@ class LeftoverDiskTest(LeftoverTest, TestCase):
 class MagicNumbers(MayBeDiskTest):
 
     def test_type_i4(self):
-        N = 2**16
+        N = 2 ** 16
         ca = carray([i for i in range(N)], dtype='i4', rootdir=self.rootdir)
 
         for i in range(len(ca)):
@@ -2601,7 +2603,7 @@ class MagicNumbers(MayBeDiskTest):
             self.assertTrue(isinstance(v, _inttypes))
 
     def test_type_i8(self):
-        N = 2**15
+        N = 2 ** 15
         ca = carray([i for i in range(N)], dtype='i8', rootdir=self.rootdir)
 
         for i in range(len(ca)):
@@ -2609,7 +2611,7 @@ class MagicNumbers(MayBeDiskTest):
             self.assertTrue(isinstance(v, _inttypes))
 
     def test_type_f8(self):
-        N = 2**15
+        N = 2 ** 15
         ca = carray([i for i in range(N)], dtype='f8', rootdir=self.rootdir)
 
         for i in range(len(ca)):
@@ -2627,7 +2629,6 @@ class MagicNumbersDiskTest(MagicNumbers, TestCase):
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
-
 
 # Local Variables:
 # mode: python

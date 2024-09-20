@@ -1,7 +1,7 @@
 /*
-    Copyright (C) 2014  Francesc Alted
-    http://blosc.org
-    License: MIT (see LICENSE.txt)
+    Copyright (c) 2014  Francesc Alted
+    https://blosc.org
+    License: BSD 3-Clause (see LICENSE.txt)
 
     Example program demonstrating use of the Blosc filter from C code.
 
@@ -23,16 +23,16 @@
     Blosc version info: 1.4.2.dev ($Date:: 2014-07-08 #$)
     Using 1 threads (previously using 1)
     Compression: 4000000 -> 158494 (25.2x)
-    Succesful roundtrip!
+    Successful roundtrip!
     Using 2 threads (previously using 1)
     Compression: 4000000 -> 158494 (25.2x)
-    Succesful roundtrip!
+    Successful roundtrip!
     Using 3 threads (previously using 2)
     Compression: 4000000 -> 158494 (25.2x)
-    Succesful roundtrip!
+    Successful roundtrip!
     Using 4 threads (previously using 3)
     Compression: 4000000 -> 158494 (25.2x)
-    Succesful roundtrip!
+    Successful roundtrip!
 
 */
 
@@ -90,7 +90,7 @@ int main(){
       }
     }
 
-    printf("Succesful roundtrip!\n");
+    printf("Successful roundtrip!\n");
   }
 
   /* After using it, destroy the Blosc environment */

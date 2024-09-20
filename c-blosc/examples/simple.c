@@ -1,7 +1,7 @@
 /*
-    Copyright (C) 2014  Francesc Alted
-    http://blosc.org
-    License: MIT (see LICENSE.txt)
+    Copyright (c) 2014  Francesc Alted
+    https://blosc.org
+    License: BSD 3-Clause (see LICENSE.txt)
 
     Example program demonstrating use of the Blosc filter from C code.
 
@@ -11,7 +11,7 @@
 
     or, if you don't have the blosc library installed:
 
-    $ gcc -O3 -msse2 simple.c -I../blosc -o simple -L../build/blosc
+    $ gcc simple.c -I../blosc -o simple ../build/blosc/libblosc.a
 
     Using MSVC on Windows:
 
@@ -22,8 +22,8 @@
     $ ./simple
     Blosc version info: 1.4.2.dev ($Date:: 2014-07-08 #$)
     Compression: 4000000 -> 158494 (25.2x)
-    Decompression succesful!
-    Succesful roundtrip!
+    Decompression successful!
+    Successful roundtrip!
 
 */
 
@@ -54,7 +54,7 @@ int main(){
   /* Compress with clevel=5 and shuffle active  */
   csize = blosc_compress(5, 1, sizeof(float), isize, data, data_out, osize);
   if (csize == 0) {
-    printf("Buffer is uncompressible.  Giving up.\n");
+    printf("Buffer is incompressible.  Giving up.\n");
     return 1;
   }
   else if (csize < 0) {
@@ -71,7 +71,7 @@ int main(){
     return dsize;
   }
 
-  printf("Decompression succesful!\n");
+  printf("Decompression successful!\n");
 
   /* After using it, destroy the Blosc environment */
   blosc_destroy();
@@ -83,6 +83,6 @@ int main(){
     }
   }
 
-  printf("Succesful roundtrip!\n");
+  printf("Successful roundtrip!\n");
   return 0;
 }
