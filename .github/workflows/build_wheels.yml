@@ -11,61 +11,62 @@ on:
         options: [ 'TESTPYPI', 'PYPI' ]
 
 jobs:
-#  build_wheels:
-#    name: Wheels for ${{ matrix.python }} on ${{ matrix.os }} - upload to ${{github.event.inputs.target}}
-#    runs-on: ${{ matrix.os }}
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ ubuntu-latest , windows-latest, macos-latest ]
-#        python: [ "cp39", "cp310", "cp311" , "cp312" ]
-#        arch: [ auto64 ]
-#
-#    steps:
-#      - name: Checkout bcolz
-#        uses: actions/checkout@v4
-#        with:
-#          submodules: 'recursive'
-#          fetch-depth: 0
-#          fetch-tags: true
-#
-#      - name: Get tags
-#        run: git fetch --tags origin
-#
-#      - name: Wheels macOS / Linux
-#        if: runner.os != 'Windows'
-#        uses: pypa/cibuildwheel@v2.20.0
-#        env:
-#          CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
-#          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
-#          CIBW_ARCHS_MACOS: x86_64 arm64
-#          CIBW_BUILD: "${{ matrix.python }}-*"
-#          CIBW_SKIP: "*-musllinux_*"
-#          CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
-#          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
-#          CIBW_BEFORE_TEST: pip install -U setuptools
-#
-#      - name: Install MSVC amd64
-#        if: runner.os == 'Windows'
-#        uses: ilammy/msvc-dev-cmd@v1
-#        with:
-#          arch: amd64
-#
-#      - name: Wheels Windows
-#        if: runner.os == 'Windows'
-#        uses: pypa/cibuildwheel@v2.20.0
-#        env:
-#          CIBW_BUILD: "${{ matrix.python }}-win_amd64"
-#          CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
-#          CIBW_BEFORE_TEST: pip install -U setuptools
-#
-#      - name: Upload wheels
-#        uses: actions/upload-artifact@v4
-#        with:
-#          path: wheelhouse/*.whl
-#          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
-#          overwrite: true
+  build_wheels:
+    name: Wheels for ${{ matrix.python }} on ${{ matrix.os }} - upload to ${{github.event.inputs.target}}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest , windows-latest, macos-latest ]
+        python: [ "cp39", "cp310", "cp311" , "cp312" ]
+        arch: [ auto64 ]
+
+    steps:
+      - name: Checkout bcolz
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+          fetch-tags: true
+          ref: 1.2.11
+
+      - name: Get tags
+        run: git fetch --tags origin
+
+      - name: Wheels macOS / Linux
+        if: runner.os != 'Windows'
+        uses: pypa/cibuildwheel@v2.20.0
+        env:
+          CIBW_BEFORE_ALL_MACOS: brew install hdf5 c-blosc
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_BUILD: "${{ matrix.python }}-*"
+          CIBW_SKIP: "*-musllinux_*"
+          CIBW_ENVIRONMENT_LINUX: DISABLE_BCOLZ_AVX2=true
+          CIBW_ENVIRONMENT_MACOS: MACOSX_DEPLOYMENT_TARGET=10.15 DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+          CIBW_BEFORE_TEST: pip install -U setuptools
+
+      - name: Install MSVC amd64
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Wheels Windows
+        if: runner.os == 'Windows'
+        uses: pypa/cibuildwheel@v2.20.0
+        env:
+          CIBW_BUILD: "${{ matrix.python }}-win_amd64"
+          CIBW_ENVIRONMENT: DISABLE_BCOLZ_AVX2=true DISABLE_BCOLZ_SSE2=true
+          CIBW_BEFORE_TEST: pip install -U setuptools
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          path: wheelhouse/*.whl
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}-${{ strategy.job-index }}
+          overwrite: true
 
   build_sdist:
     name: Build source distribution
@@ -97,8 +98,7 @@ jobs:
 
   upload_pypi:
     name: Upload to ${{github.event.inputs.target}}
-#    needs: [ build_wheels, build_sdist ]
-    needs: [ build_sdist ]
+    needs: [ build_wheels, build_sdist ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
