@@ -38,12 +38,13 @@ jobs:
         run: |
           python -VV
           python -m pip install --upgrade pip wheel setuptools
+          python -m pip install tox tox-gh-actions
           pip install -e .[test] --verbose
         env:
           DISABLE_BCOLZ_AVX2: true
 
       - name: Run tests
-        run: pytest --cov
+        run: tox
 
       - name: Upload coverage data to coveralls.io
         run: coveralls --service=github
