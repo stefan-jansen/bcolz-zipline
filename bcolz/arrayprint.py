@@ -38,7 +38,7 @@ except ImportError:
 try:
     from numpy._core.multiarray import datetime_as_string, datetime_data
 except ImportError:
-    pass
+    from numpy.core.multiarray import datetime_as_string, datetime_data
 
 
 def product(x, y):
