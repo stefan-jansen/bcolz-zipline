@@ -48,7 +48,7 @@ requires = [
     "toml",
     "numpy",
     # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-#    "oldest-supported-numpy"
+    #    "oldest-supported-numpy"
 ]
 
 build-backend = "setuptools.build_meta"
@@ -62,11 +62,17 @@ optional = [
 ]
 
 test = [
+    'tox',
     "pytest>= 6.2.3",
     "pytest-cov>=2.11.1",
     "coveralls==3.0.1",
 ]
 
+dev = [
+    'ruff',
+    'pre-commit >=2.12.1',
+    'Cython>=0.29.21'
+]
 
 [tool.setuptools_scm]
 write_to = "bcolz/_version.py"
@@ -90,3 +96,40 @@ select = ["NPY201"]
 [tools.pytest]
 testpaths = "bcolz/tests"
 addopts = "-v"
+
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{39,310,311,312}-numpy{121,122,123,124,125,126,20,21}
+isolated_build = True
+skip_missing_interpreters = True
+minversion = 3.23.0
+
+[gh-actions]
+python =
+    3.9: py39
+    3.10: py310
+    3.11: py311
+    3.12: py312
+
+[testenv]
+usedevelop = True
+setenv =
+    MPLBACKEND = Agg
+
+changedir = tmp
+extras = test
+deps =
+    numpy121: numpy>=1.21,<1.22
+    numpy122: numpy>=1.22,<1.23
+    numpy123: numpy>=1.23,<1.24
+    numpy124: numpy>=1.24,<1.25
+    numpy125: numpy>=1.25,<1.26
+    numpy126: numpy>=1.26,<2.0
+    numpy20: numpy>=2.0,<2.1
+    numpy21: numpy>=2.1,<2.2
+
+commands =
+    pytest --cov=bcolz --cov-report=term-missing --cov-report=xml {toxinidir}/bcolz/tests
+"""
