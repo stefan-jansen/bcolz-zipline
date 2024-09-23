@@ -1,9 +1,10 @@
 [project]
 name = "bcolz-zipline"
 dynamic = ["version"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
-    "numpy >=1.16"
+    "numpy >=1.21",
+    'packaging'
 ]
 
 description = "Columnar and compressed data containers."
@@ -46,9 +47,9 @@ requires = [
     "wheel",
     "Cython>=0.22",
     "toml",
-    "numpy",
+    #    "numpy",
     # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-    #    "oldest-supported-numpy"
+    "oldest-supported-numpy"
 ]
 
 build-backend = "setuptools.build_meta"
@@ -101,7 +102,7 @@ addopts = "-v"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{39,310,311,312}-numpy{121,122,123,124,125,126,20,21}
+envlist = py{39,310}-numpy{121,122,123,124,125,126,20}, py{311,312}-numpy{123,124,125,126,20}, py{310,311,312}-numpy21
 isolated_build = True
 skip_missing_interpreters = True
 minversion = 3.23.0
