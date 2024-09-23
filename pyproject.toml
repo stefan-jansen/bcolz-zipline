@@ -94,8 +94,8 @@ test-skip = ["*universal2:arm64"]
 [tool.ruff.lint]
 select = ["NPY201"]
 
-[tools.pytest]
-testpaths = "bcolz/tests"
+[tool.pytest.ini_options]
+testpaths = 'bcolz/tests'
 addopts = "-v"
 
 [tool.tox]
@@ -106,12 +106,14 @@ envlist =
     py310-numpy{121,122,123,124,125,126,20,21}
     py311-numpy{123,124,125,126,20,21}
     py312-numpy{123,124,125,126,20,21}
+    clean
+    report
 
 isolated_build = True
 skip_missing_interpreters = True
 minversion = 3.23.0
 
-[tool:pytest]
+[pytest]
 testpaths = bcolz/tests
 addopts =
     --cov-report=term-missing
@@ -126,6 +128,7 @@ python =
     3.12: py312
 
 [testenv]
+commands = pytest --cov --cov-append {posargs:-vv}
 extras = test
 deps =
     numpy121: numpy>=1.21,<1.22
@@ -137,8 +140,19 @@ deps =
     numpy20: numpy>=2.0,<2.1
     numpy21: numpy>=2.1,<2.2
 
+depends =
+    report: py39,py310,py311,py312
+    {py39,py310,py311,py312}: clean
+
+[testenv:clean]
+skip_install = true
+deps = coverage
 commands =
-    pytest
-    coverage combine
+    coverage erase
+
+[testenv:report]
+skip_install = true
+deps = coverage
+commands =
     coverage report
 """
