@@ -116,8 +116,6 @@ python =
 
 [testenv]
 usedevelop = True
-setenv =
-    MPLBACKEND = Agg
 
 changedir = tmp
 extras = test
@@ -132,5 +130,5 @@ deps =
     numpy21: numpy>=2.1,<2.2
 
 commands =
-    pytest --cov=bcolz --cov-report=term-missing --cov-report=xml {toxinidir}/bcolz/tests
+    pytest --cov={toxinidir}/bcolz --cov-report=term-missing --cov-report=xml --cov-report=html:htmlcov {toxinidir}/bcolz/tests
 """
