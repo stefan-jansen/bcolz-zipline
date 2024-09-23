@@ -46,7 +46,10 @@ jobs:
       - name: Run tests
         run: tox
 
-      - name: Upload coverage data to coveralls.io
-        run: coveralls --service=github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload coverage data to Codecov
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+          name: codecov-umbrella
+          verbose: true
