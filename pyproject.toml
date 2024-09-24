@@ -84,7 +84,7 @@ local_scheme = 'dirty-tag'
 test-extras = "test"
 test-requires = ["numpy"]
 #test-command = 'python -c "import bcolz; bcolz.test()"'
-test-command = "tox -c {package}/pyproject.toml"
+test-command = "tox -c {package}/pyproject.toml --workdir {package} --rootdir {project}"
 build-verbosity = 3
 
 [tool.cibuildwheel.macos]
