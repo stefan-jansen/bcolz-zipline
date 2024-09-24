@@ -16,7 +16,7 @@ import shutil
 import textwrap
 import pickle
 import ctypes
-from pkg_resources import parse_version
+from packaging.version import Version
 import inspect
 
 import numpy as np
@@ -2368,7 +2368,7 @@ class reprTest(TestCase):
         result = repr(ct)
         self.assertTrue("['2010-01-01' '2010-01-02']" in result)
 
-    @unittest.skipIf(parse_version(np.__version__) < parse_version("1.11"),
+    @unittest.skipIf(Version(np.__version__) < Version("1.11"),
                      "bcolz adapted to NumPy 1.11 (naive) TZ repr")
     def test_datetime_carray_nanos(self):
         x = ['2014-12-29T17:57:59.000000123',

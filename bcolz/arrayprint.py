@@ -16,7 +16,7 @@ __docformat__ = 'restructuredtext'
 # adapted by Francesc Alted 2012-8-18 for bcolz
 
 import sys
-from pkg_resources import parse_version
+from packaging.version import Version
 
 import numpy
 from numpy import maximum, minimum, absolute, not_equal, isnan, isinf
@@ -38,7 +38,7 @@ except ImportError:
 try:
     from numpy._core.multiarray import datetime_as_string, datetime_data
 except ImportError:
-    pass
+    from numpy.core.multiarray import datetime_as_string, datetime_data
 
 
 def product(x, y):
@@ -771,7 +771,7 @@ class DatetimeFormat(object):
         # If timezone is default, make it 'naive' or 'UTC' depending on
         # the numpy version
         if (timezone is None and
-            parse_version(numpy.__version__) >= parse_version("1.11")):
+            Version(numpy.__version__) >= Version("1.11")):
             timezone = "naive"
         else:
             timezone = "UTC"

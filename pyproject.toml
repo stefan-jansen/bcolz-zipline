@@ -1,13 +1,14 @@
 [project]
 name = "bcolz-zipline"
 dynamic = ["version"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
-    "numpy >=1.16"
+    "numpy >=1.21",
+    'packaging'
 ]
 
 description = "Columnar and compressed data containers."
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 
 authors = [
     { name = "Francesc Alted" },
@@ -28,7 +29,6 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -46,9 +46,9 @@ requires = [
     "wheel",
     "Cython>=0.22",
     "toml",
-    "numpy",
-    # see: https://github.com/scipy/oldest-supported-numpy/blob/master/setup.cfg
-#    "oldest-supported-numpy"
+    # Force numpy higher than 2.0rc1, so that built wheels are compatible
+    # with both numpy 1 and 2
+    "numpy>=2.0.0rc1",
 ]
 
 build-backend = "setuptools.build_meta"
@@ -62,11 +62,18 @@ optional = [
 ]
 
 test = [
+    'tox',
     "pytest>= 6.2.3",
     "pytest-cov>=2.11.1",
     "coveralls==3.0.1",
+    'pytest-xdist >=2.5.0'
 ]
 
+dev = [
+    'ruff',
+    'pre-commit >=2.12.1',
+    'Cython>=0.29.21'
+]
 
 [tool.setuptools_scm]
 write_to = "bcolz/_version.py"
@@ -79,7 +86,6 @@ test-requires = ["numpy"]
 test-command = 'python -c "import bcolz; bcolz.test()"'
 build-verbosity = 3
 
-# Optional: support Universal2 for Apple Silicon with these two lines:
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64", "universal2"]
 test-skip = ["*universal2:arm64"]
@@ -87,6 +93,65 @@ test-skip = ["*universal2:arm64"]
 [tool.ruff.lint]
 select = ["NPY201"]
 
-[tools.pytest]
-testpaths = "bcolz/tests"
+[tool.pytest.ini_options]
+testpaths = 'bcolz/tests'
 addopts = "-v"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist =
+    py39-numpy{121,122,123,124,125,126,20}
+    py310-numpy{121,122,123,124,125,126,20,21}
+    py311-numpy{123,124,125,126,20,21}
+    py312-numpy{126,20,21}
+    clean
+    report
+
+isolated_build = True
+skip_missing_interpreters = True
+minversion = 3.23.0
+
+[pytest]
+testpaths = bcolz/tests
+addopts =
+    --cov-report=term-missing
+    --cov-report=html
+    --cov-report=xml
+
+[gh-actions]
+python =
+    3.9: py39
+    3.10: py310
+    3.11: py311
+    3.12: py312
+
+[testenv]
+commands = pytest --cov --cov-append {posargs:-vv}
+extras = test
+deps =
+    numpy121: numpy>=1.21,<1.22
+    numpy122: numpy>=1.22,<1.23
+    numpy123: numpy>=1.23,<1.24
+    numpy124: numpy>=1.24,<1.25
+    numpy125: numpy>=1.25,<1.26
+    numpy126: numpy>=1.26,<2.0
+    numpy20: numpy>=2.0,<2.1
+    numpy21: numpy>=2.1,<2.2
+
+depends =
+    report: py39,py310,py311,py312
+    {py39,py310,py311,py312}: clean
+
+[testenv:clean]
+skip_install = true
+deps = coverage
+commands =
+    coverage erase
+
+[testenv:report]
+skip_install = true
+deps = coverage
+commands =
+    coverage report
+"""

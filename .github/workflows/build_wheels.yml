@@ -9,6 +9,11 @@ on:
         required: true
         default: 'PYPI'
         options: [ 'TESTPYPI', 'PYPI' ]
+      version:
+        type: string
+        description: 'Version tag'
+        required: true
+        default: '1.2.12'
 
 jobs:
   build_wheels:
@@ -29,6 +34,7 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
           fetch-tags: true
+          ref: ${{ github.event.inputs.version }}
 
       - name: Get tags
         run: git fetch --tags origin
@@ -77,7 +83,7 @@ jobs:
           submodules: true
           fetch-depth: 0
           fetch-tags: true
-          ref: 1.2.9
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Python
         uses: actions/setup-python@v5
