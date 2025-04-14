@@ -27,7 +27,7 @@ _inttypes += (np.integer,)
 ROOTDIRS = '__rootdirs__'
 
 re_ident = re.compile(r"^[^\d\W]\w*$", re.UNICODE)
-re_str_split = re.compile("^\s+|\s*,\s*|\s+$")
+re_str_split = re.compile(r"^\s+|\s*,\s*|\s+$")
 
 
 def validate_names(columns, keyword='names'):
