@@ -44,7 +44,7 @@ requires = [
     "setuptools>=45",
     "setuptools_scm[toml]>=6.2",
     "wheel",
-    "Cython>=0.22",
+    'Cython>=0.22,<3.1',
     "toml",
     # Force numpy higher than 2.0rc1, so that built wheels are compatible
     # with both numpy 1 and 2
