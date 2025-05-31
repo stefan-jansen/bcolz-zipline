@@ -55,8 +55,7 @@ _nan_str = 'nan'
 _inf_str = 'inf'
 _formatter = None  # formatting function for array elements
 
-if sys.version_info[0] >= 3:
-    from functools import reduce
+from functools import reduce
 
 
 def set_printoptions(precision=None, threshold=None, edgeitems=None,
@@ -672,13 +671,8 @@ def _digits(x, precision, format):
     return precision - len(s) + len(z)
 
 
-if sys.version_info >= (3, 0):
-    _MAXINT = 10**9
-    _MININT = -10**9
-else:
-    _MAXINT = sys.maxint
-    _MININT = -sys.maxint-1
-
+_MAXINT = 10**9
+_MININT = -10**9
 
 class IntegerFormat(object):
     def __init__(self, data):

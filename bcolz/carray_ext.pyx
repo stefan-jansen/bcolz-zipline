@@ -37,12 +37,8 @@ from bcolz import utils, attrs, array2string
 
 from .utils import build_carray
 
-if sys.version_info >= (3, 0):
-    _MAXINT = 2 ** 31 - 1
-    _inttypes = (int, np.integer)
-else:
-    _MAXINT = sys.maxint
-    _inttypes = (int, long, np.integer)
+_MAXINT = 2 ** 31 - 1
+_inttypes = (int, np.integer)
 
 _KB = 1024
 _MB = 1024 * _KB
@@ -156,9 +152,7 @@ def blosc_compressor_list():
         The list of names.
     """
     list_compr = blosc_list_compressors()
-    if sys.version_info >= (3, 0):
-        # Convert compressor names into regular strings in Python 3 (unicode)
-        list_compr = list_compr.decode()
+    list_compr = list_compr.decode()
     clist = list_compr.split(',')
     return clist
 
@@ -645,12 +639,9 @@ cdef create_bloscpack_header(nchunks=None, format_version=FORMAT_VERSION):
     return (MAGIC + struct.pack('<B', format_version) + b'\x00\x00\x00' +
             struct.pack('<q', nchunks if nchunks is not None else -1))
 
-if sys.version_info >= (3, 0):
-    def decode_byte(byte):
-        return byte
-else:
-    def decode_byte(byte):
-        return int(byte.encode('hex'), 16)
+def decode_byte(byte):
+    return byte
+
 def decode_uint32(fourbyte):
     return struct.unpack('<I', fourbyte)[0]
 
@@ -1337,13 +1328,8 @@ cdef class carray:
         storagef = os.path.join(self.metadir, STORAGE_FILE)
         with open(storagef, 'wb') as storagefh:
             dflt_list = self.dflt.tolist()
-            if type(dflt_list) in (datetime.datetime,
-                                   datetime.date, datetime.time):
-                # The datetime cannot be serialized with JSON.  Use a 0 int.
-                dflt_list = 0
             # In Python 3, the json encoder doesn't accept bytes objects
-            if sys.version_info >= (3, 0):
-                dflt_list = list_bytes_to_str(dflt_list)
+            dflt_list = list_bytes_to_str(dflt_list)
             storagefh.write(json.dumps({
                 # str(self.dtype) produces bytes by default in cython.py3.
                 # Calling .__str__() is a workaround.

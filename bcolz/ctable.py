@@ -699,7 +699,7 @@ class ctable(object):
                 elif inferred_type == 'string':
                     maxitemsize = max(len(i) for i in vals)
                     # In Python 3 strings should be represented as Unicode
-                    dtype = "U" if sys.version_info >= (3, 0) else "S"
+                    dtype = "U"
                     col = bcolz.carray(vals, dtype='%s%d' %
                                        (dtype, maxitemsize), **ckwargs)
                 else:

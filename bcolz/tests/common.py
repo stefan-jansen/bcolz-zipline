@@ -15,12 +15,8 @@ import sys
 import glob
 import shutil
 
-if sys.version < "2.7":
-    import unittest2 as unittest
-    from unittest2 import TestCase, skipUnless, SkipTest
-else:
-    import unittest  # noqa
-    from unittest import TestCase, skipUnless, SkipTest  # noqa
+import unittest  # noqa
+from unittest import TestCase, skipUnless, SkipTest  # noqa
 
 
 # Global variables for the tests
