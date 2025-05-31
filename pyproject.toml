@@ -127,6 +127,7 @@ python =
     3.10: py310
     3.11: py311
     3.12: py312
+    3.13: py313
 
 [testenv]
 commands = pytest --cov --cov-append {posargs:-vv}
@@ -140,7 +141,7 @@ deps =
     numpy126: numpy>=1.26,<2.0
     numpy20: numpy>=2.0,<2.1
     numpy21: numpy>=2.1,<2.2
-
+    numpy22: numpy>=2.2,<2.3
 depends =
     report: py39,py310,py311,py312
     {py39,py310,py311,py312}: clean
