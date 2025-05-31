@@ -19,13 +19,10 @@ from bcolz.py2help import xrange
 
 
 NR = 1e5  # the number of rows
-if sys.version_info >= (3,0):
-    # There is a silly limitation on the number of fields for namedtuples
-    # for Python 3:
-    # https://groups.google.com/forum/#!msg/python-ideas/96AwHqs59GM/8bxJsiWLN6UJ
-    NC = 253  # the number of columns
-else:
-    NC = 500  # the number of columns
+# There is a silly limitation on the number of fields for namedtuples
+# for Python 3:
+# https://groups.google.com/forum/#!msg/python-ideas/96AwHqs59GM/8bxJsiWLN6UJ
+NC = 253  # the number of columns
 mv = 1e10  # the mean value for entries (sig digits = 17 - log10(mv))
 clevel = 3  # the compression level
 cname = 'blosclz'  # the compressor to be used

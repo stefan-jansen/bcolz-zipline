@@ -5,8 +5,7 @@ from time import time
 
 import bcolz
 
-if sys.version_info >= (3,0):
-    long = int
+long = int
 
 
 t0 = time()

@@ -66,33 +66,6 @@ else:
     import builtins
     exec_ = getattr(builtins, "exec")
 
-if sys.version_info[:2] >= (2, 7):
-    from ctypes import c_ssize_t
-    from subprocess import check_output
-else:
-    import ctypes
-    if ctypes.sizeof(ctypes.c_void_p) == 4:
-        c_ssize_t = ctypes.c_int32
-    else:
-        c_ssize_t = ctypes.c_int64
-
-    from subprocess import Popen, PIPE, CalledProcessError
-
-    def check_output(*popenargs, **kwargs):
-        """ check_output from python 2.7.5 for compat with 2.6. """
-        if 'stdout' in kwargs:
-            raise ValueError(
-                'stdout argument not allowed, it will be overridden.')
-        process = Popen(stdout=PIPE, *popenargs, **kwargs)
-        output, unused_err = process.communicate()
-        retcode = process.poll()
-        if retcode:
-            cmd = kwargs.get("args")
-            if cmd is None:
-                cmd = popenargs[0]
-            try:
-                raise CalledProcessError(retcode, cmd, output=output)
-            except TypeError:  # py26 doesn't have the output argument
-                raise CalledProcessError(retcode, cmd)
-        return output
+from ctypes import c_ssize_t
+from subprocess import check_output
 

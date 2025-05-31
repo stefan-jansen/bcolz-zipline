@@ -32,9 +32,7 @@ from bcolz import carray
 from bcolz.utils import to_ndarray
 
 is_64bit = (struct.calcsize("P") == 8)
-
-if sys.version_info >= (3, 0):
-    long = int
+long = int
 
 
 class initTest(TestCase):
