@@ -27,8 +27,8 @@ _inttypes += (np.integer,)
 ROOTDIRS = '__rootdirs__'
 
 re_ident = re.compile(r"^[^\d\W]\w*$", re.UNICODE)
-re_str_split = re.compile("^\s+|\s*,\s*|\s+$")
-
+# re_str_split = re.compile("^\s+|\s*,\s*|\s+$")
+re_str_split = re.compile(r"^\s+|\s*,\s*|\s+$")
 
 def validate_names(columns, keyword='names'):
     if not all([is_identifier(x) and not iskeyword(x) for x in columns]):
@@ -699,7 +699,7 @@ class ctable(object):
                 elif inferred_type == 'string':
                     maxitemsize = max(len(i) for i in vals)
                     # In Python 3 strings should be represented as Unicode
-                    dtype = "U" if sys.version_info >= (3, 0) else "S"
+                    dtype = "U"
                     col = bcolz.carray(vals, dtype='%s%d' %
                                        (dtype, maxitemsize), **ckwargs)
                 else:

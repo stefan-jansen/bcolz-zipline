@@ -32,7 +32,8 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12"
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 license = { file = "LICENSES/BCOLZ.txt" }
 
@@ -44,7 +45,7 @@ requires = [
     "setuptools>=45",
     "setuptools_scm[toml]>=6.2",
     "wheel",
-    "Cython>=0.22",
+    "Cython>=0.22,<3.2.0",
     "toml",
     # Force numpy higher than 2.0rc1, so that built wheels are compatible
     # with both numpy 1 and 2
@@ -104,7 +105,7 @@ envlist =
     py39-numpy{121,122,123,124,125,126,20}
     py310-numpy{121,122,123,124,125,126,20,21}
     py311-numpy{123,124,125,126,20,21}
-    py312-numpy{126,20,21}
+    py312-numpy{126,20,21,22}
     clean
     report
 
@@ -125,6 +126,7 @@ python =
     3.10: py310
     3.11: py311
     3.12: py312
+    3.13: py313
 
 [testenv]
 commands = pytest --cov --cov-append {posargs:-vv}
@@ -138,7 +140,10 @@ deps =
     numpy126: numpy>=1.26,<2.0
     numpy20: numpy>=2.0,<2.1
     numpy21: numpy>=2.1,<2.2
-
+    numpy22: numpy>=2.2,<2.3
+    pytest-cov
+    pytest-xdist
+    pytest-timeout
 depends =
     report: py39,py310,py311,py312
     {py39,py310,py311,py312}: clean
